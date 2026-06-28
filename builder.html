@@ -9,14 +9,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #0F0C09;
-  --surface:  #1A1511;
-  --surface2: #221C16;
-  --border:   rgba(245,237,228,0.07);
+  --bg:       #EDEAE6;
+  --surface:  #FFFFFF;
+  --surface2: #F5F2EE;
+  --border:   rgba(0,0,0,0.09);
   --coral:    #D97757;
-  --text:     #F5EDE4;
-  --muted:    rgba(245,237,228,0.45);
-  --muted2:   rgba(245,237,228,0.18);
+  --text:     #1A1511;
+  --muted:    rgba(26,21,17,0.5);
+  --muted2:   rgba(26,21,17,0.2);
   --sidebar:  240px;
   --topbar:   52px;
 }
@@ -70,7 +70,7 @@ body {
   cursor: pointer;
   outline: none;
 }
-.tb-select option { background: #221C16; }
+.tb-select option { background: #FFFFFF; color: #1A1511; }
 
 .tb-spacer { flex: 1; }
 
@@ -85,8 +85,8 @@ body {
   font-size: 13px;
   transition: all 0.2s;
 }
-.tb-dev-btn.active { background: rgba(217,119,87,0.15); border-color: var(--coral); color: var(--coral); }
-.tb-dev-btn:hover:not(.active) { color: var(--text); border-color: var(--muted2); }
+.tb-dev-btn.active { background: rgba(217,119,87,0.12); border-color: var(--coral); color: var(--coral); }
+.tb-dev-btn:hover:not(.active) { color: var(--text); border-color: rgba(0,0,0,0.25); }
 
 .btn-download {
   padding: 8px 20px;
@@ -140,12 +140,12 @@ body {
   margin-bottom: -1px;
 }
 .sb-tab.active { color: var(--coral); border-bottom-color: var(--coral); }
-.sb-tab:hover:not(.active) { color: var(--text); }
+.sb-tab:hover:not(.active) { color: #1A1511; }
 
 .sb-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 12px; }
 .sb-panel.active { display: block; }
 .sb-panel::-webkit-scrollbar { width: 3px; }
-.sb-panel::-webkit-scrollbar-thumb { background: rgba(217,119,87,0.3); border-radius: 2px; }
+.sb-panel::-webkit-scrollbar-thumb { background: rgba(217,119,87,0.4); border-radius: 2px; }
 
 /* Template cards */
 .tpl-card {
@@ -166,8 +166,8 @@ body {
   font-size: 22px;
   border-bottom: 1px solid var(--border);
 }
-.tpl-label { padding: 8px 10px; font-size: 12px; font-weight: 700; color: var(--text); }
-.tpl-desc  { padding: 0 10px 10px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+.tpl-label { padding: 8px 10px; font-size: 12px; font-weight: 700; color: #1A1511; }
+.tpl-desc  { padding: 0 10px 10px; font-size: 11px; color: rgba(26,21,17,0.5); line-height: 1.5; }
 .tpl-card.active .tpl-label { color: var(--coral); }
 
 /* Section toggles */
@@ -242,14 +242,14 @@ body {
 #preview-wrap {
   flex: 1;
   overflow: auto;
-  background: #1C1A18;
+  background: #D8D4CE;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 20px;
 }
 #preview-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
-#preview-wrap::-webkit-scrollbar-thumb { background: rgba(245,237,228,0.15); border-radius: 3px; }
+#preview-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
 
 #preview-frame {
   background: #fff;
@@ -505,6 +505,69 @@ body {
   color: rgba(255,255,255,0.2);
 }
 
+/* Contact form section */
+.s-form {
+  padding: 70px 40px;
+  background: #fff;
+}
+.s-form-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.s-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.s-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.s-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.3px;
+}
+.s-field input,
+.s-field textarea {
+  padding: 12px 14px;
+  border: 1.5px solid #E5E2DE;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #FAFAF8;
+}
+.s-field input:focus,
+.s-field textarea:focus { border-color: var(--site-primary, #D97757); }
+.s-field textarea { resize: vertical; min-height: 100px; }
+.s-field-full { grid-column: 1 / -1; }
+.s-form-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--site-primary, #D97757), var(--site-dark, #B85C35));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.2s;
+}
+.s-form-btn:hover { opacity: 0.9; }
+.s-form-note {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 12px;
+}
+
 /* Responsive inside preview */
 @media (max-width: 600px) {
   .s-about { grid-template-columns: 1fr; }
@@ -516,8 +579,8 @@ body {
 /* ── Toast ── */
 .toast {
   position: fixed; bottom: 24px; right: 24px;
-  background: #221C16;
-  border: 1px solid rgba(217,119,87,0.3);
+  background: #1A1511;
+  border: 1px solid rgba(217,119,87,0.4);
   color: #F5EDE4;
   padding: 10px 18px;
   border-radius: 10px;
@@ -769,6 +832,35 @@ const TEMPLATES = {
         </section>`
       },
       {
+        id: 'form', label: '📋 Форма записи', visible: true,
+        html: `<section class="s-form">
+          <p class="s-section-tag" contenteditable="true">Запись онлайн</p>
+          <h2 class="s-section-title" contenteditable="true">Оставьте заявку</h2>
+          <div class="s-form-wrap">
+            <div class="s-form-grid">
+              <div class="s-field">
+                <label>Ваше имя</label>
+                <input type="text" placeholder="Например: Малика">
+              </div>
+              <div class="s-field">
+                <label>Номер телефона</label>
+                <input type="tel" placeholder="+998 (__)  ___-__-__">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Выберите услугу</label>
+                <input type="text" placeholder="Стрижка, маникюр, массаж...">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Удобное время</label>
+                <input type="text" placeholder="Например: вторник, 15:00">
+              </div>
+            </div>
+            <button class="s-form-btn" contenteditable="true">Записаться</button>
+            <p class="s-form-note" contenteditable="true">Мы перезвоним в течение 15 минут для подтверждения</p>
+          </div>
+        </section>`
+      },
+      {
         id: 'contacts', label: '📞 Контакты', visible: true,
         html: `<div class="s-contacts">
           <div class="s-contact-item"><h4>Телефон</h4><p contenteditable="true">+998 (71) 123-45-67</p></div>
@@ -903,6 +995,39 @@ const TEMPLATES = {
         </section>`
       },
       {
+        id: 'form', label: '📋 Форма записи', visible: true,
+        html: `<section class="s-form">
+          <p class="s-section-tag" contenteditable="true">Запись онлайн</p>
+          <h2 class="s-section-title" contenteditable="true">Запишитесь к врачу</h2>
+          <div class="s-form-wrap">
+            <div class="s-form-grid">
+              <div class="s-field">
+                <label>Ваше имя</label>
+                <input type="text" placeholder="Например: Азиз">
+              </div>
+              <div class="s-field">
+                <label>Номер телефона</label>
+                <input type="tel" placeholder="+998 (__)  ___-__-__">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Направление / специалист</label>
+                <input type="text" placeholder="Терапевт, стоматолог, педиатр...">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Удобное время</label>
+                <input type="text" placeholder="Например: среда, после 14:00">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Комментарий (необязательно)</label>
+                <textarea placeholder="Опишите жалобу или вопрос..."></textarea>
+              </div>
+            </div>
+            <button class="s-form-btn" contenteditable="true">Записаться на приём</button>
+            <p class="s-form-note" contenteditable="true">Перезвоним в течение 15 минут · Приём без очередей</p>
+          </div>
+        </section>`
+      },
+      {
         id: 'contacts', label: '📞 Контакты', visible: true,
         html: `<div class="s-contacts">
           <div class="s-contact-item"><h4>Телефон</h4><p contenteditable="true">+998 (71) 234-56-78</p></div>
@@ -1028,6 +1153,35 @@ const TEMPLATES = {
           <h2 contenteditable="true">Начните учиться уже в этом месяце</h2>
           <p contenteditable="true">Первый пробный урок — бесплатно. Запишитесь сейчас и получите персональный план обучения</p>
           <button class="s-cta-btn" contenteditable="true">Записаться на пробный урок</button>
+        </section>`
+      },
+      {
+        id: 'form', label: '📋 Форма записи', visible: true,
+        html: `<section class="s-form">
+          <p class="s-section-tag" contenteditable="true">Запись онлайн</p>
+          <h2 class="s-section-title" contenteditable="true">Запишитесь на пробный урок</h2>
+          <div class="s-form-wrap">
+            <div class="s-form-grid">
+              <div class="s-field">
+                <label>Имя студента</label>
+                <input type="text" placeholder="Например: Жамшид">
+              </div>
+              <div class="s-field">
+                <label>Номер телефона</label>
+                <input type="tel" placeholder="+998 (__)  ___-__-__">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Интересующий курс</label>
+                <input type="text" placeholder="Английский, Python, математика...">
+              </div>
+              <div class="s-field s-field-full">
+                <label>Текущий уровень</label>
+                <input type="text" placeholder="Например: начинающий, A2, базовый...">
+              </div>
+            </div>
+            <button class="s-form-btn" contenteditable="true">Записаться на бесплатный урок</button>
+            <p class="s-form-note" contenteditable="true">Первый урок бесплатно · Ответим в течение часа</p>
+          </div>
         </section>`
       },
       {
@@ -1224,6 +1378,17 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-hei
 .s-contact-item h4 { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:8px; }
 .s-contact-item p { font-size:15px; font-weight:600; color:rgba(255,255,255,0.85); }
 .s-footer { padding:20px 40px; background:var(--site-bg); border-top:1px solid rgba(255,255,255,0.05); text-align:center; font-size:12px; color:rgba(255,255,255,0.2); }
+.s-form { padding:70px 40px; background:#fff; }
+.s-form-wrap { max-width:560px; margin:0 auto; }
+.s-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.s-field { display:flex; flex-direction:column; gap:6px; }
+.s-field label { font-size:12px; font-weight:700; color:#555; letter-spacing:0.3px; }
+.s-field input,.s-field textarea { padding:12px 14px; border:1.5px solid #E5E2DE; border-radius:10px; font-size:14px; font-family:inherit; color:#1a1a1a; outline:none; background:#FAFAF8; }
+.s-field textarea { resize:vertical; min-height:100px; }
+.s-field-full { grid-column:1/-1; }
+.s-form-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--site-primary,#D97757),var(--site-dark,#B85C35)); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:6px; }
+.s-form-note { text-align:center; font-size:12px; color:#aaa; margin-top:12px; }
+@media (max-width:600px) { .s-form-grid { grid-template-columns:1fr; } .s-form,.s-contacts { padding-left:20px; padding-right:20px; } }
 @media (max-width:600px) {
   .s-about { grid-template-columns:1fr; }
   .s-about-visual { display:none; }
