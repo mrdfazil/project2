@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Клиенты — Ташкент | Денис Файзельгаянов</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0F0C09;
+    --surface: #1A1511;
+    --surface2: #221C16;
+    --border: rgba(245,237,228,0.07);
+    --coral: #D97757;
+    --amber: #E8C07A;
+    --text: #F5EDE4;
+    --muted: rgba(245,237,228,0.45);
+    --muted2: rgba(245,237,228,0.2);
+
+    --s1: #D97757; /* приоритет 1 */
+    --s2: #E8956A;
+    --s3: #E8C07A;
+    --s4: #8BAF7C;
+    --s5: #7C9EBF;
+
+    --new:         rgba(245,237,228,0.08);
+    --contacted:   rgba(232,192,122,0.15);
+    --progress:    rgba(217,119,87,0.18);
+    --done:        rgba(99,180,120,0.18);
+    --rejected:    rgba(180,99,99,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-left h1 {
+    font-size: 18px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #D97757, #E8C07A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-left p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .hstat { text-align: center; }
+  .hstat-num { font-size: 20px; font-weight: 800; color: var(--coral); line-height: 1; }
+  .hstat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    padding: 14px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 14px 9px 36px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input:focus { border-color: rgba(217,119,87,0.5); }
+  .search-box input::placeholder { color: var(--muted2); }
+  .search-box svg {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px; height: 15px;
+    color: var(--muted2);
+    pointer-events: none;
+  }
+
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .filter-btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: rgba(217,119,87,0.4); color: var(--text); }
+  .filter-btn.active { background: rgba(217,119,87,0.15); border-color: var(--coral); color: var(--coral); }
+
+  /* ── Main ── */
+  main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* ── Table ── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    background: var(--surface2);
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { color: var(--text); }
+  thead th.sort-asc::after  { content: ' ↑'; }
+  thead th.sort-desc::after { content: ' ↓'; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(245,237,228,0.03); }
+  tbody tr.hidden { display: none; }
+
+  td { padding: 12px 14px; vertical-align: middle; }
+
+  .td-num { color: var(--muted2); font-size: 12px; font-weight: 600; width: 36px; }
+
+  .priority-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .p1 { background: rgba(217,119,87,0.2);  color: var(--s1); }
+  .p2 { background: rgba(232,149,106,0.2); color: var(--s2); }
+  .p3 { background: rgba(232,192,122,0.2); color: var(--s3); }
+  .p4 { background: rgba(139,175,124,0.2); color: var(--s4); }
+  .p5 { background: rgba(124,158,191,0.2); color: var(--s5); }
+
+  .client-name { font-weight: 600; color: var(--text); font-size: 14px; }
+  .client-category { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .td-reason { font-size: 12px; color: var(--muted); max-width: 280px; line-height: 1.5; }
+
+  /* Status */
+  .status-select {
+    appearance: none;
+    background: var(--new);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+  }
+  tr[data-status="new"]       td .status-select { background: var(--new); }
+  tr[data-status="contacted"] td .status-select { background: var(--contacted); border-color: rgba(232,192,122,0.4); color: #E8C07A; }
+  tr[data-status="progress"]  td .status-select { background: var(--progress);  border-color: rgba(217,119,87,0.4);  color: #D97757; }
+  tr[data-status="done"]      td .status-select { background: var(--done);      border-color: rgba(99,180,120,0.4);  color: #6BB47A; }
+  tr[data-status="rejected"]  td .status-select { background: var(--rejected);  border-color: rgba(180,99,99,0.4);   color: #C07070; }
+
+  /* Note */
+  .note-cell { display: flex; align-items: center; gap: 6px; }
+  .note-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: var(--muted);
+    font-size: 12px;
+    width: 120px;
+    padding: 2px 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .note-input:focus {
+    border-bottom-color: rgba(217,119,87,0.4);
+    color: var(--text);
+  }
+  .note-input::placeholder { color: var(--muted2); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    display: none;
+  }
+
+  /* ── Export btn ── */
+  .btn-export {
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #D97757, #B85C35);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .btn-export:hover { opacity: 0.85; }
+
+  /* ── Progress bar ── */
+  .progress-bar-wrap {
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #D97757, #E8C07A);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    header { padding: 14px 16px; }
+    .toolbar { padding: 10px 16px; }
+    main { padding: 14px 16px; }
+    .td-reason { display: none; }
+    .note-input { width: 80px; }
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid rgba(217,119,87,0.3);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-left">
+    <h1>База клиентов — Ташкент</h1>
+    <p>Денис Файзельгаянов · LeadFinder · 50 потенциальных клиентов</p>
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-num" id="cnt-total">50</div><div class="hstat-label">Всего</div></div>
+    <div class="hstat"><div class="hstat-num" id="cnt-new" style="color:#F5EDE4">—</div><div class="hstat-label">Новые</div></div>
+    <div class="hstat"><div class="hstat-num" id="cnt-contacted" style="color:#E8C07A">—</div><div class="hstat-label">Написал</div></div>
+    <div class="hstat"><div class="hstat-num" id="cnt-progress" style="color:#D97757">—</div><div class="hstat-label">В работе</div></div>
+    <div class="hstat"><div class="hstat-num" id="cnt-done" style="color:#6BB47A">—</div><div class="hstat-label">Готово</div></div>
+  </div>
+</header>
+
+<!-- Progress bar -->
+<div class="progress-bar-wrap">
+  <span class="progress-label">Прогресс:</span>
+  <div class="progress-bar"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-label" id="progressText">0 / 50</span>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Поиск по имени, категории...">
+  </div>
+  <div class="filter-group" id="filterStatus">
+    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn" data-filter="new">Новые</button>
+    <button class="filter-btn" data-filter="contacted">Написал</button>
+    <button class="filter-btn" data-filter="progress">В работе</button>
+    <button class="filter-btn" data-filter="done">Готово</button>
+    <button class="filter-btn" data-filter="rejected">Отказ</button>
+  </div>
+  <div class="filter-group" id="filterPriority">
+    <button class="filter-btn" data-priority="1" style="color:#D97757">П1</button>
+    <button class="filter-btn" data-priority="2" style="color:#E8956A">П2</button>
+    <button class="filter-btn" data-priority="3" style="color:#E8C07A">П3</button>
+    <button class="filter-btn" data-priority="4" style="color:#8BAF7C">П4</button>
+    <button class="filter-btn" data-priority="5" style="color:#7C9EBF">П5</button>
+  </div>
+  <button class="btn-export" onclick="exportCSV()">⬇ Экспорт CSV</button>
+</div>
+
+<!-- Table -->
+<main>
+  <div class="table-wrap">
+    <table id="clientTable">
+      <thead>
+        <tr>
+          <th class="td-num">#</th>
+          <th data-col="priority">П</th>
+          <th data-col="name">Название</th>
+          <th data-col="reason" class="td-reason">Почему нужен лендинг</th>
+          <th data-col="status">Статус</th>
+          <th>Заметка</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState">Ничего не найдено</div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CLIENTS = [
+  // Приоритет 1
+  { id:1,  p:1, name:'Стоматология «Smile Clinic»',       cat:'Медицина',          reason:'Пациенты ищут через Google, нет сайта — теряют 30+ клиентов в месяц' },
+  { id:2,  p:1, name:'Фотограф Акбар Рашидов',            cat:'Фото/Видео',        reason:'Портфолио только в Instagram, лендинг = +40% заявок' },
+  { id:3,  p:1, name:'Частная клиника «МедПлюс»',         cat:'Медицина',          reason:'Онлайн-запись — главный запрос аудитории' },
+  { id:4,  p:1, name:'Школа английского «Global English»', cat:'Образование',       reason:'Родители ищут курсы онлайн, конкурент уже в топе' },
+  { id:5,  p:1, name:'Фотостудия «Tashkent Studio»',      cat:'Фото/Видео',        reason:'Аренда студий — 100% онлайн-спрос' },
+  { id:6,  p:1, name:'Свадебный декоратор «Gulbahor»',    cat:'Свадьба',           reason:'Невесты ищут исполнителей в поиске, не только в Instagram' },
+  { id:7,  p:1, name:'IT-курсы «Code Academy Tashkent»',  cat:'Образование',       reason:'Ниша горячая, без лендинга теряют студентов каждый день' },
+  { id:8,  p:1, name:'Психолог Малика Юсупова',           cat:'Медицина',          reason:'Частная практика — доверие строится через сайт' },
+  { id:9,  p:1, name:'Юридическая контора «LexGroup»',    cat:'Юридические услуги',reason:'Клиенты проверяют фирму онлайн перед звонком' },
+  { id:10, p:1, name:'Дизайнер интерьеров Дильшод Назаров', cat:'Дизайн',          reason:'Портфолио + форма заявки = прямые лиды' },
+  // Приоритет 2
+  { id:11, p:2, name:'Барбершоп «Black Beard»',           cat:'Красота',           reason:'Онлайн-запись — стандарт рынка, конкуренты уже внедрили' },
+  { id:12, p:2, name:'Фитнес-клуб «Iron Gym»',            cat:'Спорт',             reason:'Продажа абонементов онлайн = меньше потерь на входе' },
+  { id:13, p:2, name:'Студия йоги «Namaste Tashkent»',    cat:'Спорт',             reason:'Расписание + запись — аудитория 25-40 лет сидит онлайн' },
+  { id:14, p:2, name:'Кондитерская «Сладкий дом»',        cat:'Еда',               reason:'Торты на заказ — 90% заказов через соцсети, лендинг закрепит' },
+  { id:15, p:2, name:'Автосервис «TechAuto»',             cat:'Авто',              reason:'Специализированный сервис — аудитория с деньгами ищет онлайн' },
+  { id:16, p:2, name:'Детский центр «Умник»',             cat:'Образование',       reason:'Мамы ищут секции в Google — без сайта нет доверия' },
+  { id:17, p:2, name:'Ведущий Санжар Каримов',            cat:'Свадьба',           reason:'Портфолио + видео + форма заявки = больше бронирований' },
+  { id:18, p:2, name:'Мебельная мастерская «Wood Art»',   cat:'Производство',      reason:'Мебель на заказ — клиенты хотят видеть работы онлайн' },
+  { id:19, p:2, name:'Кейтеринг «Дастархан»',             cat:'Еда',               reason:'Корпоративы и свадьбы — решение принимается после изучения сайта' },
+  { id:20, p:2, name:'Ветеринарная клиника «Друг»',       cat:'Медицина',          reason:'Владельцы питомцев ищут клинику онлайн в экстренных случаях' },
+  // Приоритет 3
+  { id:21, p:3, name:'Бухгалтерия «FinExpert»',           cat:'B2B услуги',        reason:'ИП и ООО ищут аутсорсинг онлайн' },
+  { id:22, p:3, name:'Студия тату «Ink Tashkent»',        cat:'Красота',           reason:'Молодая аудитория 100% в онлайне, портфолио решает всё' },
+  { id:23, p:3, name:'Цветочный магазин «Розы Востока»',  cat:'Торговля',          reason:'Доставка цветов — покупают онлайн' },
+  { id:24, p:3, name:'Репетитор по математике (SAT/ЕГЭ)', cat:'Образование',       reason:'Родители ищут репетиторов через поиск' },
+  { id:25, p:3, name:'Салон красоты «Lux Beauty»',        cat:'Красота',           reason:'До 70% клиентов находят через Google — нет сайта, нет клиентов' },
+  { id:26, p:3, name:'Школа танцев «Ритм»',               cat:'Спорт',             reason:'Видео с занятий + расписание + запись = поток учеников' },
+  { id:27, p:3, name:'Маникюрный кабинет «Nail Bar»',     cat:'Красота',           reason:'Запись онлайн — ключевое требование клиентов' },
+  { id:28, p:3, name:'Логопед Нилуфар Хасанова',          cat:'Медицина',          reason:'Мамы ищут специалистов онлайн' },
+  { id:29, p:3, name:'Охранное агентство «ГардТ»',        cat:'B2B услуги',        reason:'Бизнес-клиенты проверяют компанию перед договором' },
+  { id:30, p:3, name:'Агент по недвижимости Бахром Турсунов', cat:'Недвижимость',  reason:'Объекты + форма заявки = квалифицированные лиды' },
+  // Приоритет 4
+  { id:31, p:4, name:'Автомойка премиум «Crystal»',       cat:'Авто',              reason:'Онлайн-запись слота = меньше очередей, больше клиентов' },
+  { id:32, p:4, name:'Химчистка «CleanPro»',              cat:'Бытовые услуги',    reason:'Онлайн-заявка на вызов курьера' },
+  { id:33, p:4, name:'Детский фотограф Зарина Исмаилова', cat:'Фото/Видео',        reason:'Портфолио + пакеты услуг + запись' },
+  { id:34, p:4, name:'Нотариально-переводческое бюро',    cat:'Юридические услуги',reason:'Срочный спрос — ищут мгновенно в поиске' },
+  { id:35, p:4, name:'Школа вождения «Автостарт»',        cat:'Образование',       reason:'Запись на курсы онлайн + отзывы = доверие' },
+  { id:36, p:4, name:'Пекарня «Лепёшка» (доставка)',     cat:'Еда',               reason:'Доставка выпечки — онлайн-заказ обязателен' },
+  { id:37, p:4, name:'Студия звукозаписи «Beat House»',   cat:'Творчество',        reason:'Музыканты ищут студию онлайн' },
+  { id:38, p:4, name:'Частный детский сад «Солнышко»',    cat:'Образование',       reason:'Родители изучают сад онлайн до первого звонка' },
+  { id:39, p:4, name:'Визовый центр «EasyVisa»',          cat:'B2B услуги',        reason:'Горячий спрос, срочность — конвертируется мгновенно' },
+  { id:40, p:4, name:'Массажный кабинет «Релакс»',        cat:'Красота',           reason:'СПА и массаж — онлайн-запись = стабильная загрузка' },
+  // Приоритет 5
+  { id:41, p:5, name:'Кондиционеры «CoolTech»',           cat:'Бытовые услуги',    reason:'Сезонный пик — кто в сети, тот получает все заявки' },
+  { id:42, p:5, name:'Грузоперевозки «ТашТрак»',          cat:'Логистика',         reason:'Бизнес-клиенты ищут надёжного партнёра онлайн' },
+  { id:43, p:5, name:'Клининг «Чистота»',                  cat:'Бытовые услуги',    reason:'Заявка онлайн = удобство для занятых клиентов' },
+  { id:44, p:5, name:'Видеограф Тимур Алимов',            cat:'Фото/Видео',        reason:'Видеопортфолио + прайс + форма бронирования' },
+  { id:45, p:5, name:'Детская школа программирования «Junior Code»', cat:'Образование', reason:'Молодые родители ищут доп. образование онлайн' },
+  { id:46, p:5, name:'Ателье «Модный Ташкент»',           cat:'Торговля',          reason:'Пошив на заказ — доверие строится через сайт с портфолио' },
+  { id:47, p:5, name:'Оптика «Чёткое зрение»',            cat:'Медицина',          reason:'Покупка очков онлайн + запись к офтальмологу' },
+  { id:48, p:5, name:'Тренер по боксу Rustam Pro',         cat:'Спорт',             reason:'Персональные тренировки — лендинг с видео и кейсами' },
+  { id:49, p:5, name:'Бассейн «AquaTashkent»',            cat:'Спорт',             reason:'Абонементы онлайн + расписание' },
+  { id:50, p:5, name:'Ивент-агентство «Праздник»',        cat:'Свадьба',           reason:'Корпоративы и дни рождения — B2B клиент изучает портфолио' },
+];
+
+const STATUS_LABELS = {
+  new: '🆕 Новый',
+  contacted: '✉️ Написал',
+  progress: '🔄 В работе',
+  done: '✅ Готово',
+  rejected: '❌ Отказ',
+};
+
+let data = {};
+let activeFilter = 'all';
+let activePriority = null;
+let searchQuery = '';
+let sortCol = null;
+let sortDir = 1;
+
+function load() {
+  try { data = JSON.parse(localStorage.getItem('clients_tz') || '{}'); } catch { data = {}; }
+}
+function save() {
+  localStorage.setItem('clients_tz', JSON.stringify(data));
+}
+function getRow(id) {
+  return data[id] || { status: 'new', note: '' };
+}
+
+function render() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  let rows = [...CLIENTS];
+
+  // Sort
+  if (sortCol) {
+    rows.sort((a,b) => {
+      let av = sortCol === 'status' ? getRow(a.id).status : a[sortCol];
+      let bv = sortCol === 'status' ? getRow(b.id).status : b[sortCol];
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
+    });
+  }
+
+  let visible = 0;
+  rows.forEach(c => {
+    const row = getRow(c.id);
+    const hide =
+      (activeFilter !== 'all' && row.status !== activeFilter) ||
+      (activePriority && c.p !== activePriority) ||
+      (searchQuery && !`${c.name} ${c.cat} ${c.reason}`.toLowerCase().includes(searchQuery));
+
+    const tr = document.createElement('tr');
+    tr.dataset.id = c.id;
+    tr.dataset.status = row.status;
+    if (hide) tr.classList.add('hidden');
+    else visible++;
+
+    tr.innerHTML = `
+      <td class="td-num">${c.id}</td>
+      <td><span class="priority-dot p${c.p}">${c.p}</span></td>
+      <td>
+        <div class="client-name">${c.name}</div>
+        <div class="client-category">${c.cat}</div>
+      </td>
+      <td class="td-reason">${c.reason}</td>
+      <td>
+        <select class="status-select" data-id="${c.id}" onclick="event.stopPropagation()">
+          ${Object.entries(STATUS_LABELS).map(([v,l]) =>
+            `<option value="${v}" ${row.status===v?'selected':''}>${l}</option>`
+          ).join('')}
+        </select>
+      </td>
+      <td>
+        <div class="note-cell">
+          <input class="note-input" type="text" placeholder="Добавить заметку..."
+            value="${row.note||''}" data-id="${c.id}" onclick="event.stopPropagation()">
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+  updateStats();
+}
+
+function updateStats() {
+  const counts = { new:0, contacted:0, progress:0, done:0, rejected:0 };
+  CLIENTS.forEach(c => {
+    const s = getRow(c.id).status;
+    counts[s] = (counts[s]||0) + 1;
+  });
+  document.getElementById('cnt-new').textContent       = counts.new       || 0;
+  document.getElementById('cnt-contacted').textContent = counts.contacted || 0;
+  document.getElementById('cnt-progress').textContent  = counts.progress  || 0;
+  document.getElementById('cnt-done').textContent      = counts.done      || 0;
+
+  const done = counts.done || 0;
+  const pct = Math.round(done / 50 * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} / 50 закрыто`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function exportCSV() {
+  const rows = [['#','Приоритет','Название','Категория','Статус','Заметка']];
+  CLIENTS.forEach(c => {
+    const r = getRow(c.id);
+    rows.push([c.id, c.p, c.name, c.cat, STATUS_LABELS[r.status]||r.status, r.note||'']);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'clients_tashkent.csv';
+  a.click();
+  showToast('CSV экспортирован');
+}
+
+// Events
+document.getElementById('tbody').addEventListener('change', e => {
+  if (e.target.classList.contains('status-select')) {
+    const id = +e.target.dataset.id;
+    if (!data[id]) data[id] = {};
+    data[id].status = e.target.value;
+    save();
+    const tr = e.target.closest('tr');
+    tr.dataset.status = e.target.value;
+    updateStats();
+    applyFilters();
+    showToast('Статус обновлён');
+  }
+});
+
+document.getElementById('tbody').addEventListener('input', e => {
+  if (e.target.classList.contains('note-input')) {
+    const id = +e.target.dataset.id;
+    if (!data[id]) data[id] = {};
+    data[id].note = e.target.value;
+    save();
+  }
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase().trim();
+  applyFilters();
+});
+
+document.getElementById('filterStatus').addEventListener('click', e => {
+  if (!e.target.dataset.filter) return;
+  activeFilter = e.target.dataset.filter;
+  document.querySelectorAll('#filterStatus .filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  applyFilters();
+});
+
+document.getElementById('filterPriority').addEventListener('click', e => {
+  if (!e.target.dataset.priority) return;
+  const p = +e.target.dataset.priority;
+  if (activePriority === p) {
+    activePriority = null;
+    e.target.classList.remove('active');
+  } else {
+    activePriority = p;
+    document.querySelectorAll('#filterPriority .filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+  applyFilters();
+});
+
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    render();
+  });
+});
+
+function applyFilters() {
+  document.querySelectorAll('#tbody tr').forEach(tr => {
+    const id = +tr.dataset.id;
+    const c = CLIENTS.find(x => x.id === id);
+    const row = getRow(id);
+    const hide =
+      (activeFilter !== 'all' && row.status !== activeFilter) ||
+      (activePriority && c.p !== activePriority) ||
+      (searchQuery && !`${c.name} ${c.cat} ${c.reason}`.toLowerCase().includes(searchQuery));
+    tr.classList.toggle('hidden', hide);
+  });
+
+  const visible = document.querySelectorAll('#tbody tr:not(.hidden)').length;
+  document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+}
+
+// Init
+load();
+render();
+</script>
+</body>
+</html>
