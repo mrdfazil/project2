@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Клиника «МедПлюс» — Ташкент</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #2563EB;
+  --dark:    #1D4ED8;
+  --accent:  #67E8F9;
+  --bg:      #060B14;
+}
+body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; }
+
+/* NAV */
+.s-nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg); border-bottom:1px solid rgba(255,255,255,0.06); }
+.s-nav-logo { font-size:20px; font-weight:800; color:var(--primary); letter-spacing:-0.3px; }
+.s-nav-cta { padding:9px 22px; background:var(--primary); color:#fff; border-radius:20px; font-size:13px; font-weight:700; border:none; cursor:pointer; text-decoration:none; }
+
+/* HERO */
+.s-hero { background:var(--bg); color:#fff; text-align:center; padding:80px 40px 70px; }
+.s-hero-tag { display:inline-block; padding:5px 16px; border-radius:20px; background:rgba(255,255,255,0.08); font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); margin-bottom:24px; }
+.s-hero h1 { font-size:clamp(28px,5vw,54px); font-weight:900; letter-spacing:-1.5px; line-height:1.08; margin-bottom:18px; background:linear-gradient(135deg,#fff,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.s-hero p { font-size:18px; color:rgba(255,255,255,0.55); max-width:560px; margin:0 auto 36px; }
+.s-hero-btn { display:inline-block; padding:16px 44px; background:linear-gradient(135deg,var(--primary),var(--dark)); color:#fff; border-radius:50px; font-size:16px; font-weight:700; border:none; cursor:pointer; box-shadow:0 8px 30px rgba(37,99,235,0.4); text-decoration:none; }
+
+/* STATS STRIP */
+.s-strip { background:#0D1B35; display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid rgba(255,255,255,0.06); }
+.s-strip-item { padding:24px 20px; text-align:center; border-right:1px solid rgba(255,255,255,0.06); }
+.s-strip-item:last-child { border-right:none; }
+.s-strip-num { font-size:28px; font-weight:900; color:var(--primary); line-height:1; }
+.s-strip-label { font-size:12px; color:rgba(255,255,255,0.35); margin-top:4px; }
+
+/* SERVICES */
+.s-services { padding:70px 40px; background:#fff; }
+.s-section-tag { text-align:center; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--primary); margin-bottom:10px; }
+.s-section-title { text-align:center; font-size:clamp(22px,4vw,36px); font-weight:800; letter-spacing:-0.5px; color:#111; margin-bottom:48px; }
+.s-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; }
+.s-card { background:#F0F5FF; border-radius:16px; padding:28px 22px; border:1px solid rgba(37,99,235,0.1); transition:box-shadow 0.2s; }
+.s-card:hover { box-shadow:0 8px 24px rgba(37,99,235,0.12); }
+.s-card-icon { font-size:32px; margin-bottom:14px; }
+.s-card h3 { font-size:16px; font-weight:700; color:#111; margin-bottom:8px; }
+.s-card p  { font-size:13px; color:#666; line-height:1.6; }
+.s-card-price { margin-top:12px; font-size:15px; font-weight:800; color:var(--primary); }
+
+/* ABOUT */
+.s-about { padding:70px 40px; background:var(--bg); color:#fff; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+.s-about h2 { font-size:clamp(22px,3.5vw,36px); font-weight:800; line-height:1.2; margin-bottom:16px; }
+.s-about p  { font-size:15px; color:rgba(255,255,255,0.55); line-height:1.8; margin-bottom:28px; }
+.s-about-stats { display:flex; gap:32px; }
+.s-stat-num { font-size:36px; font-weight:900; color:var(--primary); line-height:1; }
+.s-stat-label { font-size:12px; color:rgba(255,255,255,0.4); margin-top:4px; }
+.s-about-visual { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:20px; height:260px; display:flex; align-items:center; justify-content:center; font-size:56px; }
+
+/* TEAM */
+.s-team { padding:70px 40px; background:#fff; }
+.s-team-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:24px; }
+.s-team-card { text-align:center; padding:32px 20px; background:#F0F5FF; border-radius:16px; border:1px solid rgba(37,99,235,0.1); }
+.s-team-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--dark)); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; font-weight:800; }
+.s-team-card h3 { font-size:16px; font-weight:700; color:#111; margin-bottom:4px; }
+.s-team-card .role { font-size:13px; color:#888; margin-bottom:4px; }
+.s-team-card .exp  { font-size:12px; color:var(--primary); font-weight:600; }
+
+/* STEPS */
+.s-steps { padding:70px 40px; background:#F5F8FF; }
+.s-steps-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0; position:relative; }
+.s-step { padding:28px 24px; text-align:center; position:relative; }
+.s-step-num { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--dark)); color:#fff; font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; box-shadow:0 4px 16px rgba(37,99,235,0.3); }
+.s-step h3 { font-size:15px; font-weight:700; color:#111; margin-bottom:8px; }
+.s-step p  { font-size:13px; color:#666; line-height:1.6; }
+
+/* REVIEWS */
+.s-reviews { padding:70px 40px; background:#fff; }
+.s-reviews-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+.s-review { background:#F0F5FF; border-radius:16px; padding:24px; border:1px solid rgba(37,99,235,0.1); }
+.s-review-stars { color:#F59E0B; font-size:14px; margin-bottom:12px; }
+.s-review-text { font-size:14px; color:#444; line-height:1.7; margin-bottom:16px; }
+.s-review-author { font-size:13px; font-weight:700; color:#111; }
+
+/* FORM */
+.s-form { padding:70px 40px; background:#F5F8FF; }
+.s-form-wrap { max-width:560px; margin:0 auto; background:#fff; border-radius:20px; padding:40px; box-shadow:0 8px 40px rgba(37,99,235,0.08); border:1px solid rgba(37,99,235,0.1); }
+.s-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.s-field { display:flex; flex-direction:column; gap:6px; }
+.s-field label { font-size:12px; font-weight:700; color:#555; letter-spacing:0.3px; }
+.s-field input, .s-field select, .s-field textarea { padding:12px 14px; border:1.5px solid #DDE5F4; border-radius:10px; font-size:14px; font-family:inherit; color:#1a1a1a; outline:none; background:#F8FAFF; transition:border-color 0.2s; }
+.s-field input:focus, .s-field select:focus, .s-field textarea:focus { border-color:var(--primary); }
+.s-field select { cursor:pointer; }
+.s-field textarea { resize:vertical; min-height:90px; }
+.s-field-full { grid-column:1/-1; }
+.s-form-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--primary),var(--dark)); color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; margin-top:6px; box-shadow:0 4px 16px rgba(37,99,235,0.3); transition:opacity 0.2s; }
+.s-form-btn:hover { opacity:0.9; }
+.s-form-note { text-align:center; font-size:12px; color:#999; margin-top:12px; }
+
+/* CONTACTS */
+.s-contacts { padding:50px 40px; background:var(--bg); border-top:1px solid rgba(255,255,255,0.06); display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:24px; color:#fff; }
+.s-contact-item h4 { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:8px; }
+.s-contact-item p  { font-size:15px; font-weight:600; color:rgba(255,255,255,0.85); }
+.s-contact-item a  { color:var(--accent); text-decoration:none; font-weight:600; }
+
+/* FOOTER */
+.s-footer { padding:20px 40px; background:var(--bg); border-top:1px solid rgba(255,255,255,0.05); text-align:center; font-size:12px; color:rgba(255,255,255,0.2); }
+
+/* Demo banner */
+.demo-banner {
+  background: linear-gradient(135deg, #D97757, #B85C35);
+  color: #fff;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.demo-banner a { color:#fff; font-weight:800; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .s-nav { padding:14px 20px; }
+  .s-nav-logo { font-size:16px; }
+  .s-hero { padding:50px 20px; }
+  .s-hero h1 { font-size:26px; letter-spacing:-0.5px; }
+  .s-hero p { font-size:15px; }
+  .s-strip { grid-template-columns:repeat(2,1fr); }
+  .s-strip-item { border-bottom:1px solid rgba(255,255,255,0.06); }
+  .s-services, .s-team, .s-reviews, .s-steps { padding:50px 20px; }
+  .s-about { grid-template-columns:1fr; padding:50px 20px; }
+  .s-about-visual { display:none; }
+  .s-form { padding:50px 20px; }
+  .s-form-wrap { padding:24px 20px; }
+  .s-form-grid { grid-template-columns:1fr; }
+  .s-contacts { padding:40px 20px; }
+  .s-footer { padding:16px 20px; }
+  .s-steps-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Demo banner -->
+<div class="demo-banner">
+  🎨 Демо-сайт · Создан специально для клиники «МедПлюс» · Связаться: <a href="https://t.me/Den_Fazil">@Den_Fazil</a>
+</div>
+
+<!-- NAV -->
+<nav class="s-nav">
+  <div class="s-nav-logo">МедПлюс</div>
+  <a class="s-nav-cta" href="#form">Записаться</a>
+</nav>
+
+<!-- HERO -->
+<section class="s-hero">
+  <div class="s-hero-tag">Ташкент · Современная медицина</div>
+  <h1>Ваше здоровье — наш приоритет</h1>
+  <p>Опытные врачи, современное оборудование и онлайн-запись без очередей. Принимаем ежедневно.</p>
+  <a class="s-hero-btn" href="#form">Записаться на приём</a>
+</section>
+
+<!-- STATS STRIP -->
+<div class="s-strip">
+  <div class="s-strip-item"><div class="s-strip-num">8+</div><div class="s-strip-label">лет работы</div></div>
+  <div class="s-strip-item"><div class="s-strip-num">12</div><div class="s-strip-label">специалистов</div></div>
+  <div class="s-strip-item"><div class="s-strip-num">8 000+</div><div class="s-strip-label">пациентов</div></div>
+  <div class="s-strip-item"><div class="s-strip-num">15 мин</div><div class="s-strip-label">перезвоним</div></div>
+</div>
+
+<!-- SERVICES -->
+<section class="s-services">
+  <p class="s-section-tag">Наши направления</p>
+  <h2 class="s-section-title">Медицинская помощь полного цикла</h2>
+  <div class="s-cards">
+    <div class="s-card">
+      <div class="s-card-icon">🦷</div>
+      <h3>Стоматология</h3>
+      <p>Лечение, протезирование, имплантация, отбеливание. Современное оборудование, безболезненно.</p>
+      <div class="s-card-price">от 150 000 сум</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-icon">👨‍⚕️</div>
+      <h3>Терапия</h3>
+      <p>Первичный приём, диагностика, лечение острых и хронических заболеваний, чек-ап.</p>
+      <div class="s-card-price">от 100 000 сум</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-icon">👶</div>
+      <h3>Педиатрия</h3>
+      <p>Наблюдение детей с рождения, профилактика, прививки. Мягкий подход к малышам.</p>
+      <div class="s-card-price">от 100 000 сум</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-icon">🔬</div>
+      <h3>УЗИ и анализы</h3>
+      <p>УЗИ внутренних органов, сердца, щитовидной железы. Результаты анализов за 1 день.</p>
+      <div class="s-card-price">от 80 000 сум</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="s-about">
+  <div>
+    <h2>Почему пациенты выбирают МедПлюс?</h2>
+    <p>Мы работаем с 2016 года. За это время приняли более 8 000 пациентов и стали одной из самых доверенных частных клиник Ташкента. Принцип простой: качественное лечение, честные цены, забота о каждом.</p>
+    <div class="s-about-stats">
+      <div><div class="s-stat-num">8+</div><div class="s-stat-label">лет опыта</div></div>
+      <div><div class="s-stat-num">12</div><div class="s-stat-label">врачей</div></div>
+      <div><div class="s-stat-num">8 000+</div><div class="s-stat-label">пациентов</div></div>
+    </div>
+  </div>
+  <div class="s-about-visual">🏥</div>
+</section>
+
+<!-- TEAM -->
+<section class="s-team">
+  <p class="s-section-tag">Наши специалисты</p>
+  <h2 class="s-section-title">Опытные врачи</h2>
+  <div class="s-team-grid">
+    <div class="s-team-card">
+      <div class="s-team-avatar">АН</div>
+      <h3>Азиз Назаров</h3>
+      <div class="role">Главный врач · Терапевт</div>
+      <div class="exp">15 лет опыта</div>
+    </div>
+    <div class="s-team-card">
+      <div class="s-team-avatar">СК</div>
+      <h3>Саида Каримова</h3>
+      <div class="role">Стоматолог · Имплантолог</div>
+      <div class="exp">10 лет опыта</div>
+    </div>
+    <div class="s-team-card">
+      <div class="s-team-avatar">МЮ</div>
+      <h3>Муродали Юсупов</h3>
+      <div class="role">Педиатр · Неонатолог</div>
+      <div class="exp">8 лет опыта</div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="s-steps">
+  <p class="s-section-tag">Как это работает</p>
+  <h2 class="s-section-title">Запись за 3 простых шага</h2>
+  <div class="s-steps-grid">
+    <div class="s-step">
+      <div class="s-step-num">1</div>
+      <h3>Оставьте заявку</h3>
+      <p>Заполните форму ниже или позвоните — выберем удобное время</p>
+    </div>
+    <div class="s-step">
+      <div class="s-step-num">2</div>
+      <h3>Подтверждение</h3>
+      <p>Перезвоним в течение 15 минут и подтвердим ваш приём</p>
+    </div>
+    <div class="s-step">
+      <div class="s-step-num">3</div>
+      <h3>Приём без очереди</h3>
+      <p>Приходите в назначенное время — врач уже будет ждать вас</p>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="s-reviews">
+  <p class="s-section-tag">Отзывы пациентов</p>
+  <h2 class="s-section-title">Нам доверяют</h2>
+  <div class="s-reviews-grid">
+    <div class="s-review">
+      <div class="s-review-stars">★★★★★</div>
+      <div class="s-review-text">Отличная клиника! Записался онлайн, приняли без очереди. Доктор Назаров внимательный, всё объяснил. Анализы готовы уже на следующий день. Рекомендую!</div>
+      <div class="s-review-author">Бахром Исмаилов</div>
+    </div>
+    <div class="s-review">
+      <div class="s-review-stars">★★★★★</div>
+      <div class="s-review-text">Лечила зуб у доктора Каримовой — абсолютно безболезненно и очень качественно. Уже рекомендую всем знакомым. Чисто, профессионально, приятная атмосфера.</div>
+      <div class="s-review-author">Феруза Ташматова</div>
+    </div>
+    <div class="s-review">
+      <div class="s-review-stars">★★★★★</div>
+      <div class="s-review-text">Наблюдаем детей у педиатра Юсупова — он замечательный специалист. Дети не боятся идти к врачу, что само по себе говорит о многом!</div>
+      <div class="s-review-author">Нодира Рахимова</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="s-form" id="form">
+  <p class="s-section-tag">Запись онлайн</p>
+  <h2 class="s-section-title">Запишитесь на приём</h2>
+  <div class="s-form-wrap">
+    <div class="s-form-grid">
+      <div class="s-field">
+        <label>Ваше имя</label>
+        <input type="text" placeholder="Например: Азиз">
+      </div>
+      <div class="s-field">
+        <label>Номер телефона</label>
+        <input type="tel" placeholder="+998 (__)  ___-__-__">
+      </div>
+      <div class="s-field s-field-full">
+        <label>Направление / специалист</label>
+        <select>
+          <option value="">— Выберите направление —</option>
+          <option>Терапевт</option>
+          <option>Стоматология</option>
+          <option>Педиатрия</option>
+          <option>УЗИ и анализы</option>
+          <option>Другое</option>
+        </select>
+      </div>
+      <div class="s-field s-field-full">
+        <label>Удобное время</label>
+        <input type="text" placeholder="Например: завтра после 14:00">
+      </div>
+      <div class="s-field s-field-full">
+        <label>Жалоба или вопрос <span style="color:#aaa;font-weight:400">(необязательно)</span></label>
+        <textarea placeholder="Опишите кратко..."></textarea>
+      </div>
+    </div>
+    <button class="s-form-btn">Записаться на приём</button>
+    <p class="s-form-note">🔒 Данные защищены · Перезвоним в течение 15 минут</p>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<div class="s-contacts">
+  <div class="s-contact-item"><h4>Телефон</h4><p><a href="tel:+998712345678">+998 (71) 234-56-78</a></p></div>
+  <div class="s-contact-item"><h4>WhatsApp</h4><p><a href="https://wa.me/998902345678">+998 (90) 234-56-78</a></p></div>
+  <div class="s-contact-item"><h4>Адрес</h4><p>г. Ташкент, ул. Амира Темура, 45</p></div>
+  <div class="s-contact-item"><h4>Режим работы</h4><p>Пн–Сб: 8:00–19:00<br>Вс: 9:00–14:00</p></div>
+</div>
+
+<footer class="s-footer">
+  <p>© 2026 Клиника «МедПлюс» · Ташкент · Этот сайт создан как демо-пример · <a href="https://t.me/Den_Fazil" style="color:rgba(255,255,255,0.4)">@Den_Fazil</a></p>
+</footer>
+
+</body>
+</html>
