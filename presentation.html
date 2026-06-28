@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анализ рынка Ташкент · Презентация</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --coral:  #D97757;
+  --dark:   #B85C35;
+  --amber:  #E8C07A;
+  --bg:     #0F0C09;
+  --s1:     #1A1511;
+  --s2:     #221C16;
+  --text:   #F5EDE4;
+  --muted:  rgba(245,237,228,0.5);
+  --border: rgba(245,237,228,0.08);
+  --green:  #63B478;
+  --yellow: #E8C07A;
+  --red:    #C26B6B;
+}
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
+
+/* ── Deck ── */
+.deck { width: 100%; height: 100%; position: relative; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateX(40px);
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1; pointer-events: all; transform: translateX(0);
+}
+.slide.out {
+  opacity: 0; transform: translateX(-40px);
+}
+
+/* ── Nav ── */
+.nav {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 16px; z-index: 100;
+  background: rgba(15,12,9,0.85); border: 1px solid var(--border);
+  padding: 10px 20px; border-radius: 40px; backdrop-filter: blur(12px);
+}
+.nav-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--s1); color: var(--text); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.nav-btn:hover { background: var(--coral); border-color: var(--coral); }
+.nav-dots { display: flex; gap: 6px; }
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border); cursor: pointer; transition: all 0.2s;
+}
+.dot.active { background: var(--coral); width: 20px; border-radius: 3px; }
+.slide-counter { font-size: 12px; color: var(--muted); min-width: 40px; text-align: center; }
+
+/* ── Common layout ── */
+.slide-inner {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 52px 72px 100px;
+  max-width: 1200px; margin: 0 auto; width: 100%;
+}
+.tag {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 14px;
+}
+h1 { font-size: clamp(32px,4vw,56px); font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; }
+h2 { font-size: clamp(24px,3vw,40px); font-weight: 800; letter-spacing: -0.8px; line-height: 1.1; }
+.subtitle { font-size: 18px; color: var(--muted); margin-top: 16px; line-height: 1.6; max-width: 640px; }
+.grad { background: linear-gradient(135deg, var(--coral), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── Slide 1 — Cover ── */
+#s1 { background: radial-gradient(ellipse at 30% 50%, rgba(217,119,87,0.12) 0%, transparent 60%), var(--bg); }
+#s1 .slide-inner { justify-content: center; }
+#s1 h1 { font-size: clamp(36px,5vw,68px); }
+.cover-meta { margin-top: 40px; display: flex; gap: 32px; flex-wrap: wrap; }
+.cover-chip { padding: 8px 18px; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); }
+
+/* ── Slide 2 — Problem ── */
+.big-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
+.bstat { background: var(--s1); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; }
+.bstat-num { font-size: 52px; font-weight: 900; line-height: 1; }
+.bstat-num.c { color: var(--coral); }
+.bstat-num.a { color: var(--amber); }
+.bstat-num.g { color: var(--green); }
+.bstat-label { font-size: 15px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+/* ── Slide 3 — Method ── */
+.steps { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+.step { display: flex; gap: 20px; align-items: flex-start; padding: 20px 24px; background: var(--s1); border: 1px solid var(--border); border-radius: 14px; }
+.step-num { min-width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), var(--dark)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; }
+.step-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.step-body p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── Slide 4 — Results ── */
+.result-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 32px; }
+.rcard { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; }
+.rcard-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.rcard-icon { font-size: 28px; }
+.rcard-title { font-size: 15px; font-weight: 700; }
+.rcard-sub { font-size: 12px; color: var(--muted); }
+.rcard ul { list-style: none; }
+.rcard ul li { font-size: 13px; color: rgba(245,237,228,0.75); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+.rcard ul li:last-child { border-bottom: none; }
+.rcard ul li span { color: var(--coral); font-weight: 600; }
+
+/* ── Slide 5 — Errors ── */
+.error-cards { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
+.ecard { background: rgba(194,107,107,0.06); border: 1px solid rgba(194,107,107,0.2); border-radius: 14px; padding: 18px 22px; display: flex; gap: 16px; align-items: flex-start; }
+.ecard-icon { font-size: 22px; }
+.ecard h3 { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
+.ecard p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.lesson { background: rgba(99,180,120,0.08); border: 1px solid rgba(99,180,120,0.2); border-radius: 14px; padding: 18px 22px; margin-top: 20px; display: flex; gap: 14px; align-items: flex-start; }
+.lesson p { font-size: 14px; color: var(--green); line-height: 1.6; }
+
+/* ── Slide 6 — Hot lead ── */
+#s6 { background: radial-gradient(ellipse at 70% 30%, rgba(217,119,87,0.1) 0%, transparent 60%), var(--bg); }
+.hot-card { background: var(--s1); border: 2px solid rgba(217,119,87,0.4); border-radius: 24px; padding: 36px 40px; margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.hot-card h3 { font-size: 28px; font-weight: 900; color: var(--coral); margin-bottom: 8px; }
+.hot-facts { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.fact { display: flex; align-items: flex-start; gap: 12px; }
+.fact-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); margin-top: 5px; flex-shrink: 0; }
+.fact p { font-size: 14px; color: rgba(245,237,228,0.8); line-height: 1.5; }
+.hot-pitch { background: var(--s2); border-left: 3px solid var(--coral); border-radius: 0 12px 12px 0; padding: 18px 20px; font-size: 13px; color: rgba(245,237,228,0.75); line-height: 1.8; white-space: pre-wrap; }
+.flame { font-size: 48px; margin-bottom: 12px; }
+
+/* ── Slide 7 — Rankings ── */
+.rank-table { width: 100%; border-collapse: collapse; margin-top: 28px; font-size: 13px; }
+.rank-table thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+.rank-table tbody td { padding: 11px 12px; border-bottom: 1px solid rgba(245,237,228,0.04); }
+.rank-table tbody tr:last-child td { border-bottom: none; }
+.rank-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+.prob-bar { height: 6px; border-radius: 3px; background: var(--s2); width: 100px; overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 3px; }
+.name-cell { font-weight: 600; }
+.contact-cell { font-size: 12px; color: var(--muted); }
+.badge-sm { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.bg { background: rgba(99,180,120,0.15); color: var(--green); }
+.by { background: rgba(232,192,122,0.12); color: var(--amber); }
+.br { background: rgba(194,107,107,0.12); color: var(--red); }
+
+/* ── Slide 8 — Category assessment ── */
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+.cat-card { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; }
+.cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cat-name { font-size: 15px; font-weight: 700; }
+.cat-score { font-size: 22px; font-weight: 900; }
+.cat-score.high { color: var(--green); }
+.cat-score.mid  { color: var(--amber); }
+.cat-score.low  { color: var(--red); }
+.cat-bar { height: 4px; border-radius: 2px; background: var(--s2); margin-bottom: 12px; overflow: hidden; }
+.cat-fill { height: 100%; border-radius: 2px; }
+.cat-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.cat-count { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+/* ── Slide 9 — Strategy ── */
+.strategy-list { display: flex; flex-direction: column; gap: 14px; margin-top: 32px; }
+.str-item { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
+.str-week { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--coral); white-space: nowrap; }
+.str-body h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.str-body p  { font-size: 13px; color: var(--muted); }
+.str-target { font-size: 12px; font-weight: 700; background: rgba(217,119,87,0.12); color: var(--coral); padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+
+/* ── Slide 10 — Proposal ── */
+.proposal-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 32px; }
+.prop { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; text-align: center; }
+.prop-icon { font-size: 36px; margin-bottom: 14px; }
+.prop-name { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.prop-price { font-size: 28px; font-weight: 900; color: var(--coral); margin-bottom: 4px; }
+.prop-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.prop-list { text-align: left; list-style: none; }
+.prop-list li { font-size: 12px; color: rgba(245,237,228,0.7); padding: 4px 0; display: flex; gap: 8px; }
+.prop-list li::before { content: '✓'; color: var(--green); flex-shrink: 0; }
+
+/* ── Slide 11 — CTA ── */
+#s11 { background: radial-gradient(ellipse at 50% 50%, rgba(217,119,87,0.15) 0%, transparent 65%), var(--bg); }
+#s11 .slide-inner { justify-content: center; align-items: center; text-align: center; }
+#s11 h2 { font-size: clamp(28px,4vw,52px); }
+.cta-links { display: flex; gap: 20px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+.cta-link { padding: 14px 32px; border-radius: 50px; font-size: 15px; font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
+.cta-primary { background: linear-gradient(135deg, var(--coral), var(--dark)); color: #fff; box-shadow: 0 8px 30px rgba(217,119,87,0.35); }
+.cta-secondary { border: 1px solid var(--border); color: var(--text); background: var(--s1); }
+.cta-link:hover { opacity: 0.85; }
+.cta-note { margin-top: 24px; font-size: 13px; color: var(--muted); }
+
+/* Progress bar */
+.progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--coral), var(--amber)); transition: width 0.4s; z-index: 200; }
+
+@media (max-width:700px) {
+  .slide-inner { padding: 32px 24px 100px; }
+  .big-stats, .result-grid, .cat-grid, .proposal-grid { grid-template-columns: 1fr; }
+  .hot-card { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+  .str-item { grid-template-columns: 1fr; gap: 8px; }
+  .str-target { width: fit-content; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ── SLIDE 1: Cover ── -->
+  <div class="slide active" id="s1">
+    <div class="slide-inner">
+      <div class="tag">Денис Файзельгаянов · @Den_Fazil · Июнь 2026</div>
+      <h1>Рынок малого бизнеса<br><span class="grad">Ташкента без сайта</span></h1>
+      <p class="subtitle">Результаты анализа 50 реальных потенциальных клиентов: верификация, ранжирование и стратегия продаж лендингов</p>
+      <div class="cover-meta">
+        <span class="cover-chip">📍 Ташкент, Узбекистан</span>
+        <span class="cover-chip">🔍 Источники: yellowpages.uz · top.uz</span>
+        <span class="cover-chip">📊 50 компаний проверено</span>
+        <span class="cover-chip">💰 Продукт: лендинги от $250</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: Problem ── -->
+  <div class="slide" id="s2">
+    <div class="slide-inner">
+      <div class="tag">Проблема рынка</div>
+      <h2>Ташкент не<br><span class="grad">представлен онлайн</span></h2>
+      <div class="big-stats">
+        <div class="bstat">
+          <div class="bstat-num c">~80%</div>
+          <div class="bstat-label">малых бизнесов Ташкента не имеют собственного сайта — только соцсети или вообще ничего</div>
+        </div>
+        <div class="bstat">
+          <div class="bstat-num a">9 600+</div>
+          <div class="bstat-label">потенциальных клиентов в городе из 12 000+ зарегистрированных торговых точек</div>
+        </div>
+        <div class="bstat">
+          <div class="bstat-num g">$250–300</div>
+          <div class="bstat-label">средняя стоимость нашего лендинга — сопоставима с 1–2 новыми клиентами для клиники или салона</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: Method ── -->
+  <div class="slide" id="s3">
+    <div class="slide-inner">
+      <div class="tag">Методология</div>
+      <h2>Как составлен список</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Поиск через справочники</h3>
+            <p>yellowpages.uz и top.uz — официальные каталоги с 274+ стоматологиями, 200+ салонами, 76+ кафе. Фильтрация: только компании без поля «Сайт» в карточке.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Верификация через поисковики</h3>
+            <p>Каждую компанию проверяли в Google — ищем домен, официальный сайт. Если в топе только каталоги (2GIS, Yellow Pages, Yandex.Maps) — сайта нет.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Ранжирование по вероятности</h3>
+            <p>Оценка 25–90% по критериям: категория бизнеса, наличие контактов, цифровая активность (Instagram, Facebook), ценовой сегмент.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Формирование предложения</h3>
+            <p>Для каждой категории — отдельный шаблон письма + демо-сайт. Под стоматологии готов живой пример: demo-medplus.html.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Results ── -->
+  <div class="slide" id="s4">
+    <div class="slide-inner">
+      <div class="tag">Результаты анализа</div>
+      <h2>50 реальных компаний<br><span class="grad">без сайта</span></h2>
+      <div class="result-grid">
+        <div class="rcard">
+          <div class="rcard-top">
+            <div class="rcard-icon">🦷</div>
+            <div>
+              <div class="rcard-title">Стоматологии</div>
+              <div class="rcard-sub">10 клиник · Приоритет 1</div>
+            </div>
+          </div>
+          <ul>
+            <li>Abdulboriy Stom (Coming Soon!) <span>90%</span></li>
+            <li>Aesthetic & Implant Clinic <span>75%</span></li>
+            <li>Aider Med, Akmal Denta Lyuks <span>75%</span></li>
+            <li>Abdulaziz, Akmal, Akrom, Aleya, Ali, Alisher <span>65–70%</span></li>
+          </ul>
+        </div>
+        <div class="rcard">
+          <div class="rcard-top">
+            <div class="rcard-icon">💇</div>
+            <div>
+              <div class="rcard-title">Красота</div>
+              <div class="rcard-sub">14 компаний · Приоритет 2</div>
+            </div>
+          </div>
+          <ul>
+            <li>King Bear Barbershop (email!) <span>80%</span></li>
+            <li>Miyabi, Aziya (email!) <span>70%</span></li>
+            <li>Perfect Lashes <span>60%</span></li>
+            <li>Adajio, Ahn's, Antar + 7 других <span>45%</span></li>
+          </ul>
+        </div>
+        <div class="rcard">
+          <div class="rcard-top">
+            <div class="rcard-icon">🍽️</div>
+            <div>
+              <div class="rcard-title">Кафе и рестораны</div>
+              <div class="rcard-sub">19 заведений · Приоритет 3–4</div>
+            </div>
+          </div>
+          <ul>
+            <li>Afruz (телефон + email) <span>50%</span></li>
+            <li>Mezon (телефон + email) <span>50%</span></li>
+            <li>Angel's Drive (Wolt, Facebook) <span>50%</span></li>
+            <li>Broadway, 19/91, 7 Небо + 15 др. <span>30–40%</span></li>
+          </ul>
+        </div>
+        <div class="rcard">
+          <div class="rcard-top">
+            <div class="rcard-icon">🏋️</div>
+            <div>
+              <div class="rcard-title">Спорт и образование</div>
+              <div class="rcard-sub">7 компаний · Приоритет 1–3</div>
+            </div>
+          </div>
+          <ul>
+            <li>Genius Education Center <span>70%</span></li>
+            <li>Kelajakning Sardorlari <span>60%</span></li>
+            <li>Inova Fitness, Challenge <span>55%</span></li>
+            <li>Life Fitness Club <span>55%</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: Errors ── -->
+  <div class="slide" id="s5">
+    <div class="slide-inner">
+      <div class="tag">Верификация · Что исправлено</div>
+      <h2>3 компании из 50<br><span class="grad">оказались с сайтом</span></h2>
+      <div class="error-cards">
+        <div class="ecard">
+          <div class="ecard-icon">❌</div>
+          <div>
+            <h3>Chekhov Next Sport Club + Chekhov Yulduz</h3>
+            <p>Крупнейшая фитнес-сеть Узбекистана — 9 клубов в Ташкенте, Бухаре и Самарканде. Сайт: chekhovsport.uz. Справочник yellowpages.uz не указал URL. Заменены на реальные лиды.</p>
+          </div>
+        </div>
+        <div class="ecard">
+          <div class="ecard-icon">❌</div>
+          <div>
+            <h3>Happy Time Private Kindergarten</h3>
+            <p>Частный детский сад с готовым сайтом на Tilda: happytimeinfo.tilda.ws. Каталог не отображал ссылку. Заменён на Broadway Lounge Bar.</p>
+          </div>
+        </div>
+      </div>
+      <div class="lesson">
+        <div style="font-size:22px">✅</div>
+        <p><strong>Вывод:</strong> 47 из 50 компаний (94%) подтверждены без сайта. Ошибки возникли потому что справочники не всегда указывают URL. Финальная проверка через Google — обязательна перед отправкой письма.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: Hot lead ── -->
+  <div class="slide" id="s6">
+    <div class="slide-inner">
+      <div class="tag">Горячий лид #1</div>
+      <h2><span class="grad">Лучшая возможность</span><br>прямо сейчас</h2>
+      <div class="hot-card">
+        <div>
+          <div class="flame">🔥</div>
+          <h3>Abdulboriy Stom</h3>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:16px">Стоматология · Юнусабад-10, 13 · вероятность 90%</div>
+          <div class="hot-facts">
+            <div class="fact">
+              <div class="fact-dot"></div>
+              <p>Уже <strong>купили домен</strong> a-stom.uz — страница «Coming Soon». Понимают ценность, но не могут реализовать.</p>
+            </div>
+            <div class="fact">
+              <div class="fact-dot"></div>
+              <p>Есть <strong>Facebook-страница</strong> (abdulboriystom) — активны в цифровом пространстве.</p>
+            </div>
+            <div class="fact">
+              <div class="fact-dot"></div>
+              <p>Телефоны: +998 99 838-31-13, +998 93 565-48-46 — <strong>можно позвонить сразу.</strong></p>
+            </div>
+            <div class="fact">
+              <div class="fact-dot"></div>
+              <p>Демо-сайт уже готов под их нишу: demo-medplus.html</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:10px">Готовое сообщение:</div>
+          <div class="hot-pitch">Здравствуйте!
+
+Вижу, у вас уже есть домен a-stom.uz — значит понимаете ценность онлайн-присутствия.
+
+Помогу запустить полноценный сайт с онлайн-записью за 5 дней. Пример для клиники уже готов:
+mrdfazil.github.io/project2/demo-medplus.html
+
+Стоимость от 300 USD. Написать?
+
+Денис · @Den_Fazil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: Rankings ── -->
+  <div class="slide" id="s7">
+    <div class="slide-inner">
+      <div class="tag">Топ-10 по вероятности</div>
+      <h2>С кого начинать<br><span class="grad">продажи</span></h2>
+      <table class="rank-table">
+        <thead>
+          <tr>
+            <th>Ранг</th>
+            <th>Компания</th>
+            <th>Контакт</th>
+            <th>Вероятность</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🥇</td>
+            <td><div class="name-cell">Abdulboriy Stom</div><div class="contact-cell">Стоматология · Юнусабад</div></td>
+            <td><div class="contact-cell">+998 99 838-31-13<br>Facebook: abdulboriystom</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:90%;background:var(--green)"></div></div>
+                <span style="font-weight:700;color:var(--green)">90%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm bg">Горячий</span></td>
+          </tr>
+          <tr>
+            <td>🥈</td>
+            <td><div class="name-cell">King Bear Barbershop</div><div class="contact-cell">Барбершоп · Мирзо Улугбек, 103</div></td>
+            <td><div class="contact-cell">kingbearbarb@gmail.com<br>+998 94 448-85-58</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:80%;background:var(--green)"></div></div>
+                <span style="font-weight:700;color:var(--green)">80%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm bg">Email готов</span></td>
+          </tr>
+          <tr>
+            <td>🥉</td>
+            <td><div class="name-cell">Akrom Stom</div><div class="contact-cell">Стоматология · Чиланзар-11</div></td>
+            <td><div class="contact-cell">Instagram: @akrom.stom</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:80%;background:var(--green)"></div></div>
+                <span style="font-weight:700;color:var(--green)">80%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm bg">Instagram</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><div class="name-cell">Aesthetic & Implant Clinic</div><div class="contact-cell">Имплантология · ул. Заргарлик</div></td>
+            <td><div class="contact-cell">Уточнить: yellowpages.uz</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:75%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">75%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Позвонить</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><div class="name-cell">Aider Med</div><div class="contact-cell">Стоматология · Сергели-6А</div></td>
+            <td><div class="contact-cell">Уточнить: yellowpages.uz</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:75%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">75%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Позвонить</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><div class="name-cell">Akmal Denta Lyuks</div><div class="contact-cell">Стоматология · Юнусабад-9</div></td>
+            <td><div class="contact-cell">Уточнить: yellowpages.uz</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:75%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">75%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Позвонить</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><div class="name-cell">Салон «Miyabi»</div><div class="contact-cell">Красота · Яшнабадский р-н</div></td>
+            <td><div class="contact-cell">miyabi2010@yandex.ru</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:70%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">70%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Email готов</span></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><div class="name-cell">Салон «Aziya»</div><div class="contact-cell">Красота · Ташкент</div></td>
+            <td><div class="contact-cell">grandaziya@mail.ru</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:70%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">70%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Email готов</span></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><div class="name-cell">Genius Education Center</div><div class="contact-cell">Образование · Куйлюк-5</div></td>
+            <td><div class="contact-cell">Уточнить: yellowpages.uz</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:70%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">70%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Позвонить</span></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><div class="name-cell">Abdulaziz Stom</div><div class="contact-cell">Стоматология · Чиланзар-19</div></td>
+            <td><div class="contact-cell">Уточнить: yellowpages.uz</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="prob-bar"><div class="prob-fill" style="width:70%;background:var(--amber)"></div></div>
+                <span style="font-weight:700;color:var(--amber)">70%</span>
+              </div>
+            </td>
+            <td><span class="badge-sm by">Позвонить</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: Category assessment ── -->
+  <div class="slide" id="s8">
+    <div class="slide-inner">
+      <div class="tag">Оценка по категориям</div>
+      <h2>Где выше шанс<br><span class="grad">на сделку</span></h2>
+      <div class="cat-grid">
+        <div class="cat-card">
+          <div class="cat-header">
+            <span class="cat-name">🦷 Стоматологии</span>
+            <span class="cat-score high">70%</span>
+          </div>
+          <div class="cat-bar"><div class="cat-fill" style="width:70%;background:var(--green)"></div></div>
+          <div class="cat-desc">Лучшая категория. Пациент из Google = 1–5 новых визитов в месяц. Сайт окупается с первого клиента. Владельцы клиник считают деньги — ROI объяснить просто.</div>
+          <div class="cat-count">10 клиник в базе · средняя вероятность 70%</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-header">
+            <span class="cat-name">📚 Образование</span>
+            <span class="cat-score high">65%</span>
+          </div>
+          <div class="cat-bar"><div class="cat-fill" style="width:65%;background:var(--green)"></div></div>
+          <div class="cat-desc">Родители ищут кружки и садики в Google. Один ребёнок = абонемент 50–150 USD/мес. Конкуренция высокая — без сайта теряются среди конкурентов.</div>
+          <div class="cat-count">2 центра в базе · средняя вероятность 65%</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-header">
+            <span class="cat-name">💇 Красота</span>
+            <span class="cat-score mid">55%</span>
+          </div>
+          <div class="cat-bar"><div class="cat-fill" style="width:55%;background:var(--amber)"></div></div>
+          <div class="cat-desc">Половина думает «Instagram хватит». Ключевой аргумент — онлайн-запись без звонков. Те у кого есть email/контакт (Miyabi, Aziya, King Bear) — значительно лучше.</div>
+          <div class="cat-count">14 компаний в базе · средняя вероятность 55%</div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-header">
+            <span class="cat-name">🏋️ Спорт/Фитнес</span>
+            <span class="cat-score mid">50%</span>
+          </div>
+          <div class="cat-bar"><div class="cat-fill" style="width:50%;background:var(--amber)"></div></div>
+          <div class="cat-desc">Малые залы ограничены в бюджете. Аргумент: продажа абонементов онлайн без администратора = экономия. Внимание: Afina ФОК может быть при отеле — уточнить.</div>
+          <div class="cat-count">4 зала в базе · средняя вероятность 50%</div>
+        </div>
+        <div class="cat-card" style="grid-column:1/-1">
+          <div class="cat-header">
+            <span class="cat-name">🍽️ Кафе и рестораны</span>
+            <span class="cat-score low">35%</span>
+          </div>
+          <div class="cat-bar"><div class="cat-fill" style="width:35%;background:var(--red)"></div></div>
+          <div class="cat-desc">Сложнейшая категория. «У нас и так полный зал», «Есть 2GIS и Instagram» — типичные возражения. Исключения: Afruz, Mezon, Angel's Drive (есть контакты, активны в digital). Кафе — последняя очередь после получения первых кейсов.</div>
+          <div class="cat-count">19 заведений в базе · средняя вероятность 35%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: Strategy ── -->
+  <div class="slide" id="s9">
+    <div class="slide-inner">
+      <div class="tag">Рекомендуемая стратегия</div>
+      <h2>План действий<br><span class="grad">по неделям</span></h2>
+      <div class="strategy-list">
+        <div class="str-item">
+          <div class="str-week">Сейчас</div>
+          <div class="str-body">
+            <h3>Горячий лид — Abdulboriy Stom</h3>
+            <p>Написать в Facebook или позвонить: «Вижу домен a-stom.uz — Coming Soon. Запустим за 5 дней?» Прикрепить demo-medplus.html.</p>
+          </div>
+          <div class="str-target">1 контакт</div>
+        </div>
+        <div class="str-item">
+          <div class="str-week">Неделя 1</div>
+          <div class="str-body">
+            <h3>Стоматологии с Email / Instagram</h3>
+            <p>King Bear (email), Akrom Stom (Instagram @akrom.stom), Miyabi (email), Aziya (email). Отправить персональное письмо с демо. Цель: 4–5 контактов.</p>
+          </div>
+          <div class="str-target">4–5 контактов</div>
+        </div>
+        <div class="str-item">
+          <div class="str-week">Неделя 2</div>
+          <div class="str-body">
+            <h3>Остальные стоматологии — позвонить</h3>
+            <p>Abdulaziz, Aesthetic, Aider, Akmal x2, Aleya, Ali, Alisher. Звонить через yellowpages.uz — там видны телефоны после нажатия «Показать».</p>
+          </div>
+          <div class="str-target">8–10 звонков</div>
+        </div>
+        <div class="str-item">
+          <div class="str-week">Неделя 3</div>
+          <div class="str-body">
+            <h3>Образование + Фитнес</h3>
+            <p>Genius Education, Kelajakning Sardorlari. Inova Fitness, Challenge, Life Fitness. Сделать демо-сайт для образовательного центра как новый аргумент.</p>
+          </div>
+          <div class="str-target">5–6 контактов</div>
+        </div>
+        <div class="str-item">
+          <div class="str-week">Неделя 4+</div>
+          <div class="str-body">
+            <h3>Салоны красоты + Кафе (с кейсами)</h3>
+            <p>К этому моменту будут первые кейсы — показывать готовые сайты, не демо. Это многократно повышает конверсию для скептиков из кафе/салонов.</p>
+          </div>
+          <div class="str-target">10–15 контактов</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 10: Proposal ── -->
+  <div class="slide" id="s10">
+    <div class="slide-inner">
+      <div class="tag">Продуктовое предложение</div>
+      <h2>Три пакета<br><span class="grad">для разных клиентов</span></h2>
+      <div class="proposal-grid">
+        <div class="prop">
+          <div class="prop-icon">🚀</div>
+          <div class="prop-name">Старт</div>
+          <div class="prop-price">$250</div>
+          <div class="prop-desc">Для салонов красоты, фитнес-залов, кафе. Быстро и чётко.</div>
+          <ul class="prop-list">
+            <li>Лендинг 5–6 секций</li>
+            <li>Форма заявки / записи</li>
+            <li>Адаптация под телефон</li>
+            <li>Срок: 3 дня</li>
+            <li>Передача файлов заказчику</li>
+          </ul>
+        </div>
+        <div class="prop" style="border-color:rgba(217,119,87,0.3);background:rgba(217,119,87,0.05)">
+          <div class="prop-icon">⭐</div>
+          <div class="prop-name">Профи</div>
+          <div class="prop-price">$300</div>
+          <div class="prop-desc">Для клиник, образовательных центров. Полноценный продающий сайт.</div>
+          <ul class="prop-list">
+            <li>Лендинг 8–10 секций</li>
+            <li>Онлайн-запись с формой</li>
+            <li>Карточки врачей / команды</li>
+            <li>Блок отзывов</li>
+            <li>Срок: 5 дней</li>
+          </ul>
+        </div>
+        <div class="prop">
+          <div class="prop-icon">💎</div>
+          <div class="prop-name">Премиум</div>
+          <div class="prop-price">$400+</div>
+          <div class="prop-desc">Для имплантологии, VIP-салонов. Максимум доверия и конверсии.</div>
+          <ul class="prop-list">
+            <li>Полный сайт с анимацией</li>
+            <li>Интеграция с WhatsApp/Telegram</li>
+            <li>Калькулятор цен / услуг</li>
+            <li>SEO-оптимизация</li>
+            <li>Поддержка 1 месяц</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 11: CTA ── -->
+  <div class="slide" id="s11">
+    <div class="slide-inner">
+      <div class="tag">Следующий шаг</div>
+      <h2>Первая сделка —<br><span class="grad">Abdulboriy Stom</span></h2>
+      <p class="subtitle">Написать прямо сейчас. Домен куплен, клиент уже хочет сайт — нужно только предложить.</p>
+      <div class="cta-links">
+        <a class="cta-link cta-primary" href="https://www.facebook.com/abdulboriystom" target="_blank">📘 Открыть Facebook клиники</a>
+        <a class="cta-link cta-secondary" href="clients.html">📋 Открыть CRM</a>
+        <a class="cta-link cta-secondary" href="demo-medplus.html">🏥 Демо для клиники</a>
+        <a class="cta-link cta-secondary" href="clients_export.csv">📊 Скачать Excel</a>
+      </div>
+      <p class="cta-note">Денис Файзельгаянов · Telegram: @Den_Fazil · Ташкент, 2026</p>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Nav -->
+<div class="nav">
+  <button class="nav-btn" id="btnPrev">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <div class="slide-counter" id="counter">1 / 11</div>
+  <button class="nav-btn" id="btnNext">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dots   = document.getElementById('dots');
+const counter= document.getElementById('counter');
+const progress= document.getElementById('progress');
+const N = slides.length;
+let cur = 0;
+
+// Build dots
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => go(i);
+  dots.appendChild(d);
+});
+
+function go(next) {
+  if (next < 0 || next >= N) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(() => slides[cur === next ? cur : cur].classList.remove('out'), 400);
+  cur = next;
+  slides[cur].classList.add('active');
+  dots.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
+  counter.textContent = `${cur+1} / ${N}`;
+  progress.style.width = `${(cur+1)/N*100}%`;
+}
+
+document.getElementById('btnNext').onclick = () => go(cur+1);
+document.getElementById('btnPrev').onclick = () => go(cur-1);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(cur+1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); go(cur-1); }
+});
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) go(dx < 0 ? cur+1 : cur-1);
+});
+
+// Init progress
+progress.style.width = `${1/N*100}%`;
+</script>
+</body>
+</html>
