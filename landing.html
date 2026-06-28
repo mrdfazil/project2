@@ -8,17 +8,17 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --purple: #7c3aed;
-    --blue: #2563eb;
-    --cyan: #06b6d4;
-    --green: #10b981;
+    --coral:  #D97757;
+    --deep:   #B85C35;
+    --amber:  #E8C07A;
+    --warm:   #C4906A;
   }
 
   html { scroll-behavior: smooth; }
 
   body {
-    background: #060612;
-    color: #fff;
+    background: #100C09;
+    color: #F5EDE4;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
@@ -30,9 +30,9 @@
     inset: 0;
     z-index: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(37,99,235,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 60% 40%, rgba(6,182,212,0.08) 0%, transparent 50%);
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(217,119,87,0.16) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(184,92,53,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 60% 40%, rgba(232,192,122,0.07) 0%, transparent 50%);
     pointer-events: none;
   }
 
@@ -42,8 +42,8 @@
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      linear-gradient(rgba(245,237,228,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,237,228,0.025) 1px, transparent 1px);
     background-size: 60px 60px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
   }
@@ -76,7 +76,7 @@
   .nav-logo {
     font-size: 15px;
     font-weight: 700;
-    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    background: linear-gradient(90deg, #D97757, #E8C07A);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -95,8 +95,8 @@
   }
   .nav-cta:hover {
     color: #fff;
-    border-color: rgba(167,139,250,0.5);
-    background: rgba(124,58,237,0.15);
+    border-color: rgba(217,119,87,0.4);
+    background: rgba(217,119,87,0.12);
   }
 
   /* ── HERO ── */
@@ -111,11 +111,11 @@
     gap: 8px;
     padding: 6px 16px;
     border-radius: 50px;
-    background: rgba(124,58,237,0.15);
-    border: 1px solid rgba(124,58,237,0.35);
+    background: rgba(217,119,87,0.12);
+    border: 1px solid rgba(217,119,87,0.3);
     font-size: 12px;
     font-weight: 600;
-    color: #a78bfa;
+    color: #EAA87C;
     letter-spacing: 1px;
     text-transform: uppercase;
     margin-bottom: 32px;
@@ -124,9 +124,9 @@
   .hero-badge::before {
     content: '';
     width: 6px; height: 6px;
-    background: #7c3aed;
+    background: #D97757;
     border-radius: 50%;
-    box-shadow: 0 0 8px #7c3aed;
+    box-shadow: 0 0 8px #D97757;
     animation: blink 1.5s ease-in-out infinite;
   }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -141,7 +141,7 @@
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #fff 0%, #c4b5fd 35%, #93c5fd 65%, #6ee7b7 100%);
+    background: linear-gradient(135deg, #fff 0%, #EAB88A 35%, #EFC49A 65%, #D4A574 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -175,7 +175,7 @@
     gap: 12px;
     padding: 18px 48px;
     border-radius: 50px;
-    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    background: linear-gradient(135deg, #D97757, #B85C35);
     color: #fff;
     font-size: 17px;
     font-weight: 700;
@@ -184,13 +184,13 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 0 0 rgba(124,58,237,0.5);
+    box-shadow: 0 0 0 0 rgba(217,119,87,0.5);
     animation: pulse-btn 2.5s ease-in-out infinite;
     transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
   }
   @keyframes pulse-btn {
-    0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.5), 0 8px 30px rgba(124,58,237,0.4); }
-    50%      { box-shadow: 0 0 0 14px rgba(124,58,237,0), 0 8px 30px rgba(124,58,237,0.6); }
+    0%,100% { box-shadow: 0 0 0 0 rgba(217,119,87,0.5), 0 8px 30px rgba(217,119,87,0.35); }
+    50%      { box-shadow: 0 0 0 14px rgba(124,58,237,0), 0 8px 30px rgba(217,119,87,0.5); }
   }
   .btn-cta::before {
     content:'';
@@ -236,11 +236,11 @@
     text-align: center;
     transition: background 0.2s;
   }
-  .stat-item:hover { background: rgba(124,58,237,0.08); }
+  .stat-item:hover { background: rgba(217,119,87,0.07); }
   .stat-num {
     font-size: clamp(28px, 5vw, 42px);
     font-weight: 900;
-    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    background: linear-gradient(135deg, #EAA87C, #EFC49A);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -261,7 +261,7 @@
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #a78bfa;
+    color: #EAA87C;
     margin-bottom: 16px;
   }
   .section-title {
@@ -302,7 +302,7 @@
   .card:hover::before { opacity:1; }
 
   .card:nth-child(1) { --card-glow: rgba(124,58,237,0.1); }
-  .card:nth-child(2) { --card-glow: rgba(37,99,235,0.1); }
+  .card:nth-child(2) { --card-glow: rgba(184,92,53,0.08); }
   .card:nth-child(3) { --card-glow: rgba(16,185,129,0.1); }
 
   .card-icon {
@@ -312,9 +312,9 @@
     margin-bottom: 24px;
     position: relative;
   }
-  .card:nth-child(1) .card-icon { background: rgba(124,58,237,0.15); color: #a78bfa; }
-  .card:nth-child(2) .card-icon { background: rgba(37,99,235,0.15); color: #60a5fa; }
-  .card:nth-child(3) .card-icon { background: rgba(16,185,129,0.15); color: #34d399; }
+  .card:nth-child(1) .card-icon { background: rgba(217,119,87,0.12); color: #EAA87C; }
+  .card:nth-child(2) .card-icon { background: rgba(184,92,53,0.12); color: #EFC49A; }
+  .card:nth-child(3) .card-icon { background: rgba(196,144,106,0.15); color: #D4A574; }
   .card-icon svg { width:26px;height:26px; }
 
   .card-num {
@@ -372,7 +372,7 @@
     flex-shrink:0;
     margin-top:2px;
     border-radius:50%;
-    background: linear-gradient(135deg,#7c3aed,#2563eb);
+    background: linear-gradient(135deg,#D97757,#B85C35);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
     background-size:cover;
   }
@@ -414,8 +414,8 @@
   .vc-row svg { width:16px;height:16px;flex-shrink:0; }
   .vc-row-label { color:rgba(255,255,255,0.35);font-size:11px; }
   .vc-row-value { color:rgba(255,255,255,0.75);font-size:13px;font-weight:500; }
-  .tag-found { margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3); }
-  .tag-no-site { margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25); }
+  .tag-found { margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(196,144,106,0.15);color:#D4A574;border:1px solid rgba(196,144,106,0.3); }
+  .tag-no-site { margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(217,100,70,0.12);color:#E8956A;border:1px solid rgba(217,100,70,0.25); }
 
   /* ── CTA Section ── */
   .cta-section {
@@ -425,8 +425,8 @@
   .cta-box {
     max-width: 700px;
     margin: 0 auto;
-    background: rgba(124,58,237,0.08);
-    border: 1px solid rgba(124,58,237,0.25);
+    background: rgba(217,119,87,0.07);
+    border: 1px solid rgba(217,119,87,0.22);
     border-radius: 32px;
     padding: 64px 40px;
     position: relative;
@@ -438,7 +438,7 @@
     top:-80px;left:50%;transform:translateX(-50%);
     width:300px;height:300px;
     border-radius:50%;
-    background:radial-gradient(circle,rgba(124,58,237,0.2),transparent 70%);
+    background:radial-gradient(circle,rgba(217,119,87,0.18),transparent 70%);
     pointer-events:none;
   }
   .cta-box h2 {
@@ -521,20 +521,21 @@
 </section>
 
 <!-- STATS -->
-<div class="stats">
+<div class="stats" style="padding-top:0">
   <div class="container">
+    <p style="text-align:center;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#EAA87C;margin-bottom:20px;">📍 Ташкент — анализ рынка</p>
     <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-num">87%</div>
-        <div class="stat-label">малого бизнеса без сайта</div>
+        <div class="stat-num">12 000+</div>
+        <div class="stat-label">торговых точек в Ташкенте</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">3 мин</div>
-        <div class="stat-label">до готового предложения</div>
+        <div class="stat-num">~80%</div>
+        <div class="stat-label">из них — без сайта или лендинга</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">0</div>
-        <div class="stat-label">ручной работы по поиску</div>
+        <div class="stat-num">9 600</div>
+        <div class="stat-label">потенциальных клиентов в одном городе</div>
       </div>
     </div>
   </div>
@@ -621,7 +622,7 @@
           </div>
           <div class="vc-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
             <div style="display:flex;align-items:center;gap:8px;width:100%">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#EAA87C" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               <span class="vc-row-value">Кофейня «Уют»</span>
               <span class="tag-no-site">нет сайта</span>
             </div>
@@ -629,7 +630,7 @@
           </div>
           <div class="vc-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
             <div style="display:flex;align-items:center;gap:8px;width:100%">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#EFC49A" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               <span class="vc-row-value">Мастерская «Ключ»</span>
               <span class="tag-no-site">нет сайта</span>
             </div>
@@ -637,7 +638,7 @@
           </div>
           <div class="vc-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
             <div style="display:flex;align-items:center;gap:8px;width:100%">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="2" style="width:16px;height:16px"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               <span class="vc-row-value">Барбершоп «Честный»</span>
               <span class="tag-found">письмо готово</span>
             </div>
