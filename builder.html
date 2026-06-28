@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>СайтМейкер — Конструктор сайтов</title>
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0F0C09;
+  --surface:  #1A1511;
+  --surface2: #221C16;
+  --border:   rgba(245,237,228,0.07);
+  --coral:    #D97757;
+  --text:     #F5EDE4;
+  --muted:    rgba(245,237,228,0.45);
+  --muted2:   rgba(245,237,228,0.18);
+  --sidebar:  240px;
+  --topbar:   52px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Topbar ── */
+#topbar {
+  height: var(--topbar);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.tb-logo {
+  font-size: 15px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #D97757, #E8C07A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.3px;
+  margin-right: 8px;
+}
+
+.tb-sep { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+.tb-label { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+.tb-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.tb-select option { background: #221C16; }
+
+.tb-spacer { flex: 1; }
+
+.tb-device { display: flex; gap: 4px; }
+.tb-dev-btn {
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.tb-dev-btn.active { background: rgba(217,119,87,0.15); border-color: var(--coral); color: var(--coral); }
+.tb-dev-btn:hover:not(.active) { color: var(--text); border-color: var(--muted2); }
+
+.btn-download {
+  padding: 8px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #D97757, #B85C35);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-download:hover { opacity: 0.85; }
+
+/* ── Layout ── */
+#layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sb-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.sb-tab {
+  flex: 1;
+  padding: 11px 4px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.sb-tab.active { color: var(--coral); border-bottom-color: var(--coral); }
+.sb-tab:hover:not(.active) { color: var(--text); }
+
+.sb-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 12px; }
+.sb-panel.active { display: block; }
+.sb-panel::-webkit-scrollbar { width: 3px; }
+.sb-panel::-webkit-scrollbar-thumb { background: rgba(217,119,87,0.3); border-radius: 2px; }
+
+/* Template cards */
+.tpl-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tpl-card:hover { border-color: rgba(217,119,87,0.4); }
+.tpl-card.active { border-color: var(--coral); box-shadow: 0 0 0 1px var(--coral); }
+.tpl-thumb {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border-bottom: 1px solid var(--border);
+}
+.tpl-label { padding: 8px 10px; font-size: 12px; font-weight: 700; color: var(--text); }
+.tpl-desc  { padding: 0 10px 10px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+.tpl-card.active .tpl-label { color: var(--coral); }
+
+/* Section toggles */
+.sec-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 8px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+}
+.sec-item:hover { background: var(--surface2); }
+.sec-name { flex: 1; font-size: 12px; font-weight: 600; color: var(--text); }
+.sec-toggle {
+  position: relative;
+  width: 32px; height: 18px;
+  background: var(--muted2);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+  flex-shrink: 0;
+}
+.sec-toggle.on { background: var(--coral); }
+.sec-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 12px; height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.2s;
+}
+.sec-toggle.on::after { left: 17px; }
+.sec-drag { color: var(--muted2); cursor: grab; font-size: 14px; }
+
+/* Theme colors */
+.sb-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin: 14px 0 8px; }
+.theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+.theme-swatch {
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+.theme-swatch:hover { transform: scale(1.05); }
+.theme-swatch.active { border-color: #fff; }
+.theme-swatch::after {
+  content: attr(data-name);
+  position: absolute;
+  bottom: -18px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* Font size */
+.font-row { display: flex; align-items: center; gap: 8px; margin-top: 24px; }
+.font-row label { font-size: 11px; color: var(--muted); font-weight: 600; flex: 1; }
+.font-row input[type=range] {
+  flex: 2;
+  accent-color: var(--coral);
+}
+.font-size-val { font-size: 11px; color: var(--text); font-weight: 700; width: 28px; text-align: right; }
+
+/* ── Preview area ── */
+#preview-wrap {
+  flex: 1;
+  overflow: auto;
+  background: #1C1A18;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+}
+#preview-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+#preview-wrap::-webkit-scrollbar-thumb { background: rgba(245,237,228,0.15); border-radius: 3px; }
+
+#preview-frame {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 960px;
+  transition: max-width 0.3s;
+}
+#preview-frame.mobile { max-width: 390px; }
+#preview-frame.tablet { max-width: 768px; }
+
+/* ── SITE CSS (inside preview) ── */
+#site-content {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+}
+
+/* Editable hint */
+#site-content [contenteditable]:hover {
+  outline: 2px dashed rgba(217,119,87,0.4);
+  outline-offset: 2px;
+  border-radius: 3px;
+  cursor: text;
+}
+#site-content [contenteditable]:focus {
+  outline: 2px solid #D97757;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ── Site sections ── */
+.s-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background: var(--site-bg, #0F0C09);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.s-nav-logo { font-size: 18px; font-weight: 800; color: var(--site-primary, #D97757); }
+.s-nav-cta {
+  padding: 8px 20px;
+  background: var(--site-primary, #D97757);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.s-hero {
+  background: var(--site-bg, #0F0C09);
+  color: #fff;
+  text-align: center;
+  padding: 80px 40px 70px;
+}
+.s-hero-tag {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--site-accent, #E8C07A);
+  margin-bottom: 24px;
+}
+.s-hero h1 {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, #fff, var(--site-accent, #E8C07A));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.s-hero p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.55);
+  max-width: 540px;
+  margin: 0 auto 36px;
+}
+.s-hero-btn {
+  display: inline-block;
+  padding: 16px 44px;
+  background: linear-gradient(135deg, var(--site-primary, #D97757), var(--site-dark, #B85C35));
+  color: #fff;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.s-services {
+  padding: 70px 40px;
+  background: #fff;
+}
+.s-section-tag {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--site-primary, #D97757);
+  margin-bottom: 10px;
+}
+.s-section-title {
+  text-align: center;
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #111;
+  margin-bottom: 48px;
+}
+.s-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.s-card {
+  background: #F8F5F2;
+  border-radius: 16px;
+  padding: 28px 22px;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.s-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.s-card-icon { font-size: 32px; margin-bottom: 14px; }
+.s-card h3 { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 8px; }
+.s-card p  { font-size: 13px; color: #666; line-height: 1.6; }
+.s-card-price { margin-top: 12px; font-size: 15px; font-weight: 800; color: var(--site-primary, #D97757); }
+
+.s-about {
+  padding: 70px 40px;
+  background: var(--site-bg, #0F0C09);
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.s-about h2 { font-size: clamp(22px,3.5vw,34px); font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+.s-about p  { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.8; margin-bottom: 24px; }
+.s-about-stats { display: flex; gap: 32px; }
+.s-stat-num { font-size: 36px; font-weight: 900; color: var(--site-primary, #D97757); line-height: 1; }
+.s-stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+.s-about-visual {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.s-team {
+  padding: 70px 40px;
+  background: #fff;
+}
+.s-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+.s-team-card {
+  text-align: center;
+  padding: 32px 20px;
+  background: #F8F5F2;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.s-team-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--site-primary, #D97757), var(--site-dark, #B85C35));
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: #fff; font-weight: 700;
+}
+.s-team-card h3 { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 4px; }
+.s-team-card p  { font-size: 13px; color: #888; }
+
+.s-reviews {
+  padding: 70px 40px;
+  background: #F8F5F2;
+}
+.s-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.s-review {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.s-review-stars { color: #F59E0B; font-size: 14px; margin-bottom: 12px; }
+.s-review-text { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 16px; }
+.s-review-author { font-size: 13px; font-weight: 700; color: #111; }
+
+.s-cta {
+  padding: 70px 40px;
+  background: linear-gradient(135deg, var(--site-bg, #0F0C09) 0%, #1a0e08 100%);
+  color: #fff;
+  text-align: center;
+}
+.s-cta h2 { font-size: clamp(24px,4vw,40px); font-weight: 800; margin-bottom: 14px; }
+.s-cta p  { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 36px; }
+.s-cta-btn {
+  display: inline-block;
+  padding: 16px 44px;
+  background: linear-gradient(135deg, var(--site-primary, #D97757), var(--site-dark, #B85C35));
+  color: #fff;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.s-contacts {
+  padding: 50px 40px;
+  background: var(--site-bg, #0F0C09);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+  color: #fff;
+}
+.s-contact-item h4 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 8px; }
+.s-contact-item p  { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85); }
+
+.s-footer {
+  padding: 20px 40px;
+  background: var(--site-bg, #0F0C09);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* Responsive inside preview */
+@media (max-width: 600px) {
+  .s-about { grid-template-columns: 1fr; }
+  .s-about-visual { display: none; }
+  .s-nav { padding: 14px 20px; }
+  .s-hero, .s-services, .s-about, .s-team, .s-reviews, .s-cta, .s-contacts { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #221C16;
+  border: 1px solid rgba(217,119,87,0.3);
+  color: #F5EDE4;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  z-index: 999;
+  opacity: 0; transform: translateY(8px);
+  transition: all 0.25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div id="topbar">
+  <span class="tb-logo">СайтМейкер</span>
+  <div class="tb-sep"></div>
+  <span class="tb-label">Шаблон:</span>
+  <select class="tb-select" id="tplSelect" onchange="switchTemplate(this.value)">
+    <option value="beauty">💅 Салон красоты</option>
+    <option value="medical">🏥 Медицина / Клиника</option>
+    <option value="education">📚 Образование / Курсы</option>
+  </select>
+  <div class="tb-spacer"></div>
+  <div class="tb-device">
+    <button class="tb-dev-btn active" data-w="960" onclick="setDevice(this, 960)">🖥 ПК</button>
+    <button class="tb-dev-btn" data-w="768" onclick="setDevice(this, 768)">📱 Планшет</button>
+    <button class="tb-dev-btn" data-w="390" onclick="setDevice(this, 390)">📱 Телефон</button>
+  </div>
+  <div class="tb-sep"></div>
+  <button class="btn-download" onclick="downloadHTML()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Скачать HTML
+  </button>
+</div>
+
+<!-- Layout -->
+<div id="layout">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sb-tabs">
+      <button class="sb-tab active" onclick="switchTab('templates',this)">Шаблон</button>
+      <button class="sb-tab" onclick="switchTab('sections',this)">Секции</button>
+      <button class="sb-tab" onclick="switchTab('style',this)">Стиль</button>
+    </div>
+
+    <!-- Templates tab -->
+    <div class="sb-panel active" id="tab-templates">
+      <div class="tpl-card active" data-tpl="beauty" onclick="selectTpl('beauty',this)">
+        <div class="tpl-thumb" style="background:linear-gradient(135deg,#2D1A14,#3D2418)">💅</div>
+        <div class="tpl-label">Салон красоты</div>
+        <div class="tpl-desc">Маникюр, парикмахерская, массаж, СПА</div>
+      </div>
+      <div class="tpl-card" data-tpl="medical" onclick="selectTpl('medical',this)">
+        <div class="tpl-thumb" style="background:linear-gradient(135deg,#0E1D2E,#102436)">🏥</div>
+        <div class="tpl-label">Медицина / Клиника</div>
+        <div class="tpl-desc">Стоматология, терапия, педиатрия</div>
+      </div>
+      <div class="tpl-card" data-tpl="education" onclick="selectTpl('education',this)">
+        <div class="tpl-thumb" style="background:linear-gradient(135deg,#1A0E2E,#21103A)">📚</div>
+        <div class="tpl-label">Образование / Курсы</div>
+        <div class="tpl-desc">Языковые школы, IT-курсы, репетиторы</div>
+      </div>
+    </div>
+
+    <!-- Sections tab -->
+    <div class="sb-panel" id="tab-sections">
+      <div id="sections-list"></div>
+    </div>
+
+    <!-- Style tab -->
+    <div class="sb-panel" id="tab-style">
+      <div class="sb-section-title">Цветовая тема</div>
+      <div class="theme-grid" style="margin-bottom:30px">
+        <div class="theme-swatch active" data-name="Коралл"
+          style="background:linear-gradient(135deg,#D97757,#B85C35)"
+          data-primary="#D97757" data-dark="#B85C35" data-accent="#E8C07A" data-bg="#0F0C09"
+          onclick="setTheme(this)"></div>
+        <div class="theme-swatch" data-name="Океан"
+          style="background:linear-gradient(135deg,#2563EB,#1D4ED8)"
+          data-primary="#2563EB" data-dark="#1D4ED8" data-accent="#67E8F9" data-bg="#060B14"
+          onclick="setTheme(this)"></div>
+        <div class="theme-swatch" data-name="Изумруд"
+          style="background:linear-gradient(135deg,#059669,#047857)"
+          data-primary="#059669" data-dark="#047857" data-accent="#6EE7B7" data-bg="#06100D"
+          onclick="setTheme(this)"></div>
+        <div class="theme-swatch" data-name="Аметист"
+          style="background:linear-gradient(135deg,#7C3AED,#6D28D9)"
+          data-primary="#7C3AED" data-dark="#6D28D9" data-accent="#C4B5FD" data-bg="#0C0618"
+          onclick="setTheme(this)"></div>
+        <div class="theme-swatch" data-name="Золото"
+          style="background:linear-gradient(135deg,#D97706,#B45309)"
+          data-primary="#D97706" data-dark="#B45309" data-accent="#FCD34D" data-bg="#100E06"
+          onclick="setTheme(this)"></div>
+        <div class="theme-swatch" data-name="Роза"
+          style="background:linear-gradient(135deg,#E11D48,#BE123C)"
+          data-primary="#E11D48" data-dark="#BE123C" data-accent="#FDA4AF" data-bg="#10060A"
+          onclick="setTheme(this)"></div>
+      </div>
+
+      <div class="sb-section-title">Размер текста</div>
+      <div class="font-row">
+        <label>Шрифт</label>
+        <input type="range" min="14" max="20" value="16" id="fontRange"
+          oninput="setFontSize(this.value)">
+        <span class="font-size-val" id="fontVal">16px</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div id="preview-wrap">
+    <div id="preview-frame">
+      <div id="site-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Themes ──
+let currentTheme = {
+  primary: '#D97757', dark: '#B85C35', accent: '#E8C07A', bg: '#0F0C09'
+};
+
+// ── Templates ──
+const TEMPLATES = {
+
+  beauty: {
+    name: 'Салон красоты',
+    sections: [
+      {
+        id: 'nav', label: '🔝 Шапка / Навигация', visible: true,
+        html: `<nav class="s-nav">
+          <div class="s-nav-logo" contenteditable="true">Салон «Название»</div>
+          <button class="s-nav-cta" contenteditable="true">Записаться</button>
+        </nav>`
+      },
+      {
+        id: 'hero', label: '🌟 Главный экран', visible: true,
+        html: `<section class="s-hero">
+          <div class="s-hero-tag" contenteditable="true">Ташкент · Профессиональный уход</div>
+          <h1 contenteditable="true">Красота, которая вдохновляет</h1>
+          <p contenteditable="true">Мы создаём неповторимые образы и дарим удовольствие от каждого визита. Команда профессионалов ждёт вас.</p>
+          <button class="s-hero-btn" contenteditable="true">Записаться онлайн</button>
+        </section>`
+      },
+      {
+        id: 'services', label: '✨ Услуги', visible: true,
+        html: `<section class="s-services">
+          <p class="s-section-tag" contenteditable="true">Наши услуги</p>
+          <h2 class="s-section-title" contenteditable="true">Всё для вашей красоты</h2>
+          <div class="s-cards">
+            <div class="s-card">
+              <div class="s-card-icon">✂️</div>
+              <h3 contenteditable="true">Стрижка и укладка</h3>
+              <p contenteditable="true">Авторские стрижки, укладки и окрашивание от лучших мастеров Ташкента.</p>
+              <div class="s-card-price" contenteditable="true">от 80 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">💅</div>
+              <h3 contenteditable="true">Маникюр и педикюр</h3>
+              <p contenteditable="true">Классический, аппаратный и наращивание. Гель-лак, дизайн.</p>
+              <div class="s-card-price" contenteditable="true">от 60 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">💆</div>
+              <h3 contenteditable="true">Массаж и СПА</h3>
+              <p contenteditable="true">Расслабляющий, лечебный и антицеллюлитный массаж. Программы СПА.</p>
+              <div class="s-card-price" contenteditable="true">от 150 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">👄</div>
+              <h3 contenteditable="true">Макияж и брови</h3>
+              <p contenteditable="true">Дневной, вечерний и свадебный макияж. Коррекция и татуаж бровей.</p>
+              <div class="s-card-price" contenteditable="true">от 120 000 сум</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'about', label: '📖 О нас', visible: true,
+        html: `<section class="s-about">
+          <div>
+            <h2 contenteditable="true">Почему выбирают нас?</h2>
+            <p contenteditable="true">Мы работаем с 2018 года и за это время стали одним из лучших салонов Ташкента. Используем только профессиональную косметику и следим за мировыми трендами.</p>
+            <div class="s-about-stats">
+              <div><div class="s-stat-num" contenteditable="true">5+</div><div class="s-stat-label">лет опыта</div></div>
+              <div><div class="s-stat-num" contenteditable="true">3000+</div><div class="s-stat-label">довольных клиентов</div></div>
+              <div><div class="s-stat-num" contenteditable="true">12</div><div class="s-stat-label">мастеров</div></div>
+            </div>
+          </div>
+          <div class="s-about-visual">💎</div>
+        </section>`
+      },
+      {
+        id: 'team', label: '👥 Мастера', visible: true,
+        html: `<section class="s-team">
+          <p class="s-section-tag" contenteditable="true">Наша команда</p>
+          <h2 class="s-section-title" contenteditable="true">Мастера своего дела</h2>
+          <div class="s-team-grid">
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">МА</div>
+              <h3 contenteditable="true">Малика Азимова</h3>
+              <p contenteditable="true">Топ-стилист · 7 лет опыта</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">НК</div>
+              <h3 contenteditable="true">Нилуфар Каримова</h3>
+              <p contenteditable="true">Мастер маникюра · 5 лет опыта</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">ЗЮ</div>
+              <h3 contenteditable="true">Зарина Юсупова</h3>
+              <p contenteditable="true">Визажист-стилист · 6 лет опыта</p>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'reviews', label: '⭐ Отзывы', visible: true,
+        html: `<section class="s-reviews">
+          <p class="s-section-tag" contenteditable="true">Отзывы клиентов</p>
+          <h2 class="s-section-title" contenteditable="true">Что говорят наши клиенты</h2>
+          <div class="s-reviews-grid">
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">Отличный салон! Мастер Малика сделала невероятную причёску. Обязательно вернусь снова. Атмосфера очень уютная, персонал приветливый.</div>
+              <div class="s-review-author" contenteditable="true">Гулнора Рашидова</div>
+            </div>
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">Делала маникюр у Нилуфар — просто восторг! Всё чисто, аккуратно, результат держится уже 3 недели. Рекомендую всем подругам!</div>
+              <div class="s-review-author" contenteditable="true">Дилноза Турсунова</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'cta', label: '📣 Запись / CTA', visible: true,
+        html: `<section class="s-cta">
+          <h2 contenteditable="true">Запишитесь прямо сейчас</h2>
+          <p contenteditable="true">Позвоните нам или напишите в Telegram — выберем удобное время</p>
+          <button class="s-cta-btn" contenteditable="true">Записаться онлайн</button>
+        </section>`
+      },
+      {
+        id: 'contacts', label: '📞 Контакты', visible: true,
+        html: `<div class="s-contacts">
+          <div class="s-contact-item"><h4>Телефон</h4><p contenteditable="true">+998 (71) 123-45-67</p></div>
+          <div class="s-contact-item"><h4>Telegram / WhatsApp</h4><p contenteditable="true">@salon_name</p></div>
+          <div class="s-contact-item"><h4>Адрес</h4><p contenteditable="true">г. Ташкент, ул. Навои, 15</p></div>
+          <div class="s-contact-item"><h4>Режим работы</h4><p contenteditable="true">Пн–Сб: 9:00–20:00</p></div>
+        </div>`
+      },
+      {
+        id: 'footer', label: '🔻 Подвал', visible: true,
+        html: `<footer class="s-footer"><p contenteditable="true">© 2026 Салон красоты «Название» · Ташкент</p></footer>`
+      },
+    ]
+  },
+
+  medical: {
+    name: 'Медицина',
+    sections: [
+      {
+        id: 'nav', label: '🔝 Шапка', visible: true,
+        html: `<nav class="s-nav">
+          <div class="s-nav-logo" contenteditable="true">Клиника «Название»</div>
+          <button class="s-nav-cta" contenteditable="true">Записаться</button>
+        </nav>`
+      },
+      {
+        id: 'hero', label: '🌟 Главный экран', visible: true,
+        html: `<section class="s-hero">
+          <div class="s-hero-tag" contenteditable="true">Ташкент · Современная медицина</div>
+          <h1 contenteditable="true">Ваше здоровье — наш приоритет</h1>
+          <p contenteditable="true">Современное оборудование, опытные врачи и индивидуальный подход к каждому пациенту. Запишитесь онлайн.</p>
+          <button class="s-hero-btn" contenteditable="true">Записаться на приём</button>
+        </section>`
+      },
+      {
+        id: 'services', label: '🩺 Направления', visible: true,
+        html: `<section class="s-services">
+          <p class="s-section-tag" contenteditable="true">Наши направления</p>
+          <h2 class="s-section-title" contenteditable="true">Медицинская помощь полного цикла</h2>
+          <div class="s-cards">
+            <div class="s-card">
+              <div class="s-card-icon">🦷</div>
+              <h3 contenteditable="true">Стоматология</h3>
+              <p contenteditable="true">Лечение, протезирование, имплантация. Современное оборудование и безболезненные процедуры.</p>
+              <div class="s-card-price" contenteditable="true">от 150 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">👨‍⚕️</div>
+              <h3 contenteditable="true">Терапия</h3>
+              <p contenteditable="true">Первичный приём, диагностика, лечение хронических и острых заболеваний.</p>
+              <div class="s-card-price" contenteditable="true">от 100 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">👶</div>
+              <h3 contenteditable="true">Педиатрия</h3>
+              <p contenteditable="true">Наблюдение детей от рождения, профилактика, прививки, лечение.</p>
+              <div class="s-card-price" contenteditable="true">от 100 000 сум</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">🔬</div>
+              <h3 contenteditable="true">Диагностика и УЗИ</h3>
+              <p contenteditable="true">Полный спектр лабораторных анализов и инструментальной диагностики.</p>
+              <div class="s-card-price" contenteditable="true">от 80 000 сум</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'about', label: '📖 О клинике', visible: true,
+        html: `<section class="s-about">
+          <div>
+            <h2 contenteditable="true">Почему пациенты выбирают нас?</h2>
+            <p contenteditable="true">Наша клиника работает с 2015 года. За это время мы приняли тысячи пациентов и заработали репутацию надёжного медицинского партнёра. Современное оборудование, лицензированные специалисты, чистота и комфорт.</p>
+            <div class="s-about-stats">
+              <div><div class="s-stat-num" contenteditable="true">9+</div><div class="s-stat-label">лет работы</div></div>
+              <div><div class="s-stat-num" contenteditable="true">15+</div><div class="s-stat-label">врачей</div></div>
+              <div><div class="s-stat-num" contenteditable="true">10 000+</div><div class="s-stat-label">пациентов</div></div>
+            </div>
+          </div>
+          <div class="s-about-visual">🏥</div>
+        </section>`
+      },
+      {
+        id: 'team', label: '👨‍⚕️ Врачи', visible: true,
+        html: `<section class="s-team">
+          <p class="s-section-tag" contenteditable="true">Наши специалисты</p>
+          <h2 class="s-section-title" contenteditable="true">Опытные врачи</h2>
+          <div class="s-team-grid">
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">АН</div>
+              <h3 contenteditable="true">Азиз Назаров</h3>
+              <p contenteditable="true">Главный врач · Терапевт · 15 лет опыта</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">СК</div>
+              <h3 contenteditable="true">Саида Каримова</h3>
+              <p contenteditable="true">Стоматолог · Имплантолог · 10 лет опыта</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">МЮ</div>
+              <h3 contenteditable="true">Муродали Юсупов</h3>
+              <p contenteditable="true">Педиатр · Неонатолог · 8 лет опыта</p>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'reviews', label: '⭐ Отзывы', visible: true,
+        html: `<section class="s-reviews">
+          <p class="s-section-tag" contenteditable="true">Отзывы пациентов</p>
+          <h2 class="s-section-title" contenteditable="true">Нам доверяют</h2>
+          <div class="s-reviews-grid">
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">Отличная клиника! Записался онлайн, приняли без очереди. Врач внимательный, всё объяснил. Анализы готовы на следующий день.</div>
+              <div class="s-review-author" contenteditable="true">Бахром Исмаилов</div>
+            </div>
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">Лечили зуб у доктора Каримовой — безболезненно и качественно. Уже рекомендую всем знакомым. Очень чисто и профессионально.</div>
+              <div class="s-review-author" contenteditable="true">Феруза Ташматова</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'cta', label: '📣 Запись', visible: true,
+        html: `<section class="s-cta">
+          <h2 contenteditable="true">Запишитесь на приём сегодня</h2>
+          <p contenteditable="true">Оставьте заявку — перезвоним в течение 15 минут и подберём удобное время</p>
+          <button class="s-cta-btn" contenteditable="true">Записаться онлайн</button>
+        </section>`
+      },
+      {
+        id: 'contacts', label: '📞 Контакты', visible: true,
+        html: `<div class="s-contacts">
+          <div class="s-contact-item"><h4>Телефон</h4><p contenteditable="true">+998 (71) 234-56-78</p></div>
+          <div class="s-contact-item"><h4>WhatsApp</h4><p contenteditable="true">+998 (90) 234-56-78</p></div>
+          <div class="s-contact-item"><h4>Адрес</h4><p contenteditable="true">г. Ташкент, ул. Амира Темура, 45</p></div>
+          <div class="s-contact-item"><h4>Режим работы</h4><p contenteditable="true">Пн–Сб: 8:00–19:00</p></div>
+        </div>`
+      },
+      {
+        id: 'footer', label: '🔻 Подвал', visible: true,
+        html: `<footer class="s-footer"><p contenteditable="true">© 2026 Клиника «Название» · Ташкент · Лицензия МЗ № 0001</p></footer>`
+      },
+    ]
+  },
+
+  education: {
+    name: 'Образование',
+    sections: [
+      {
+        id: 'nav', label: '🔝 Шапка', visible: true,
+        html: `<nav class="s-nav">
+          <div class="s-nav-logo" contenteditable="true">Школа «Название»</div>
+          <button class="s-nav-cta" contenteditable="true">Записаться</button>
+        </nav>`
+      },
+      {
+        id: 'hero', label: '🌟 Главный экран', visible: true,
+        html: `<section class="s-hero">
+          <div class="s-hero-tag" contenteditable="true">Ташкент · Качественное образование</div>
+          <h1 contenteditable="true">Знания, которые открывают двери</h1>
+          <p contenteditable="true">Практические курсы от опытных преподавателей. Гарантируем результат уже после первого месяца обучения.</p>
+          <button class="s-hero-btn" contenteditable="true">Записаться на пробный урок</button>
+        </section>`
+      },
+      {
+        id: 'services', label: '📚 Курсы', visible: true,
+        html: `<section class="s-services">
+          <p class="s-section-tag" contenteditable="true">Наши курсы</p>
+          <h2 class="s-section-title" contenteditable="true">Выберите направление</h2>
+          <div class="s-cards">
+            <div class="s-card">
+              <div class="s-card-icon">🇬🇧</div>
+              <h3 contenteditable="true">Английский язык</h3>
+              <p contenteditable="true">Уровни A1–C1. Разговорный, деловой, подготовка к IELTS и TOEFL. Малые группы.</p>
+              <div class="s-card-price" contenteditable="true">от 400 000 сум/мес</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">💻</div>
+              <h3 contenteditable="true">Программирование</h3>
+              <p contenteditable="true">Python, JavaScript, веб-разработка. Проектный подход — уходите с портфолио.</p>
+              <div class="s-card-price" contenteditable="true">от 600 000 сум/мес</div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-icon">📐</div>
+              <h3 contenteditable="true">Математика и физика</h3>
+              <p contenteditable="true">Подготовка к DTM, SAT и ЕГЭ. Индивидуальные и групповые занятия.</p>
+              <div class="s-card-price" contenteditable="true">от 350 000 сум/мес</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'about', label: '📖 О школе', visible: true,
+        html: `<section class="s-about">
+          <div>
+            <h2 contenteditable="true">Почему выбирают нашу школу?</h2>
+            <p contenteditable="true">Мы работаем с 2019 года и за это время выпустили более 500 студентов. Наши ученики поступают в лучшие университеты мира и находят работу в IT-компаниях. Результат — наш главный приоритет.</p>
+            <div class="s-about-stats">
+              <div><div class="s-stat-num" contenteditable="true">5+</div><div class="s-stat-label">лет опыта</div></div>
+              <div><div class="s-stat-num" contenteditable="true">500+</div><div class="s-stat-label">выпускников</div></div>
+              <div><div class="s-stat-num" contenteditable="true">95%</div><div class="s-stat-label">достигают цели</div></div>
+            </div>
+          </div>
+          <div class="s-about-visual">🎓</div>
+        </section>`
+      },
+      {
+        id: 'team', label: '👨‍🏫 Преподаватели', visible: true,
+        html: `<section class="s-team">
+          <p class="s-section-tag" contenteditable="true">Наши преподаватели</p>
+          <h2 class="s-section-title" contenteditable="true">Учитесь у лучших</h2>
+          <div class="s-team-grid">
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">ДА</div>
+              <h3 contenteditable="true">Дилшод Алимов</h3>
+              <p contenteditable="true">Преподаватель English · IELTS 8.0 · 8 лет опыта</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">НХ</div>
+              <h3 contenteditable="true">Нодира Хасанова</h3>
+              <p contenteditable="true">Преподаватель математики · DTM 180+ баллов</p>
+            </div>
+            <div class="s-team-card">
+              <div class="s-team-avatar" contenteditable="true">АК</div>
+              <h3 contenteditable="true">Акбар Каланов</h3>
+              <p contenteditable="true">Senior Developer · Преподаёт Python и JS</p>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'reviews', label: '⭐ Отзывы', visible: true,
+        html: `<section class="s-reviews">
+          <p class="s-section-tag" contenteditable="true">Отзывы учеников</p>
+          <h2 class="s-section-title" contenteditable="true">Истории успеха</h2>
+          <div class="s-reviews-grid">
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">За 6 месяцев поднял английский с A2 до B2, сдал IELTS на 6.5. Преподаватель отличный — всегда объясняет понятно и с юмором.</div>
+              <div class="s-review-author" contenteditable="true">Жамшид Рахимов</div>
+            </div>
+            <div class="s-review">
+              <div class="s-review-stars">★★★★★</div>
+              <div class="s-review-text" contenteditable="true">Курс по Python дал всё необходимое для старта. Уже через 4 месяца нашла первый заказ на фрилансе. Очень структурированная программа!</div>
+              <div class="s-review-author" contenteditable="true">Шахло Умарова</div>
+            </div>
+          </div>
+        </section>`
+      },
+      {
+        id: 'cta', label: '📣 Запись', visible: true,
+        html: `<section class="s-cta">
+          <h2 contenteditable="true">Начните учиться уже в этом месяце</h2>
+          <p contenteditable="true">Первый пробный урок — бесплатно. Запишитесь сейчас и получите персональный план обучения</p>
+          <button class="s-cta-btn" contenteditable="true">Записаться на пробный урок</button>
+        </section>`
+      },
+      {
+        id: 'contacts', label: '📞 Контакты', visible: true,
+        html: `<div class="s-contacts">
+          <div class="s-contact-item"><h4>Телефон</h4><p contenteditable="true">+998 (71) 345-67-89</p></div>
+          <div class="s-contact-item"><h4>Telegram</h4><p contenteditable="true">@school_name</p></div>
+          <div class="s-contact-item"><h4>Адрес</h4><p contenteditable="true">г. Ташкент, ул. Мирзо Улугбека, 28</p></div>
+          <div class="s-contact-item"><h4>Занятия</h4><p contenteditable="true">Пн–Пт: 8:00–21:00, Сб–Вс: 9:00–18:00</p></div>
+        </div>`
+      },
+      {
+        id: 'footer', label: '🔻 Подвал', visible: true,
+        html: `<footer class="s-footer"><p contenteditable="true">© 2026 Школа «Название» · Ташкент</p></footer>`
+      },
+    ]
+  }
+};
+
+// ── State ──
+let currentTpl = 'beauty';
+let sectionVisibility = {};
+
+function getCurrentSections() {
+  return TEMPLATES[currentTpl].sections.map(s => ({
+    ...s,
+    visible: sectionVisibility[currentTpl + '_' + s.id] !== undefined
+      ? sectionVisibility[currentTpl + '_' + s.id]
+      : s.visible
+  }));
+}
+
+// ── Render ──
+function renderPreview() {
+  const sections = getCurrentSections();
+  const site = document.getElementById('site-content');
+
+  // Apply theme CSS vars
+  site.style.setProperty('--site-primary', currentTheme.primary);
+  site.style.setProperty('--site-dark',    currentTheme.dark);
+  site.style.setProperty('--site-accent',  currentTheme.accent);
+  site.style.setProperty('--site-bg',      currentTheme.bg);
+
+  site.innerHTML = sections
+    .filter(s => s.visible)
+    .map(s => `<div data-section="${s.id}">${s.html}</div>`)
+    .join('');
+}
+
+function renderSectionsList() {
+  const sections = getCurrentSections();
+  const list = document.getElementById('sections-list');
+  list.innerHTML = sections.map(s => `
+    <div class="sec-item">
+      <span class="sec-drag">⠿</span>
+      <span class="sec-name">${s.label}</span>
+      <button class="sec-toggle ${s.visible ? 'on' : ''}"
+        onclick="toggleSection('${s.id}', this)"></button>
+    </div>
+  `).join('');
+}
+
+function toggleSection(id, btn) {
+  const key = currentTpl + '_' + id;
+  const sections = getCurrentSections();
+  const sec = sections.find(s => s.id === id);
+  const newVal = !sec.visible;
+  sectionVisibility[key] = newVal;
+  btn.classList.toggle('on', newVal);
+  renderPreview();
+}
+
+// ── Template switch ──
+function switchTemplate(tpl) {
+  currentTpl = tpl;
+  document.getElementById('tplSelect').value = tpl;
+  document.querySelectorAll('.tpl-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.tpl === tpl);
+  });
+  renderPreview();
+  renderSectionsList();
+}
+
+function selectTpl(tpl, el) {
+  switchTemplate(tpl);
+}
+
+// ── Tabs ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.sb-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── Theme ──
+function setTheme(el) {
+  currentTheme = {
+    primary: el.dataset.primary,
+    dark:    el.dataset.dark,
+    accent:  el.dataset.accent,
+    bg:      el.dataset.bg,
+  };
+  document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const site = document.getElementById('site-content');
+  site.style.setProperty('--site-primary', currentTheme.primary);
+  site.style.setProperty('--site-dark',    currentTheme.dark);
+  site.style.setProperty('--site-accent',  currentTheme.accent);
+  site.style.setProperty('--site-bg',      currentTheme.bg);
+}
+
+// ── Font size ──
+function setFontSize(v) {
+  document.getElementById('site-content').style.fontSize = v + 'px';
+  document.getElementById('fontVal').textContent = v + 'px';
+}
+
+// ── Device ──
+function setDevice(btn, w) {
+  document.querySelectorAll('.tb-dev-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const frame = document.getElementById('preview-frame');
+  frame.style.maxWidth = w + 'px';
+}
+
+// ── Download ──
+function downloadHTML() {
+  const site = document.getElementById('site-content');
+  const clone = site.cloneNode(true);
+
+  // Remove contenteditable
+  clone.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+
+  // Remove builder outline styles
+  const html = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${TEMPLATES[currentTpl].name}</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --site-primary: ${currentTheme.primary};
+  --site-dark: ${currentTheme.dark};
+  --site-accent: ${currentTheme.accent};
+  --site-bg: ${currentTheme.bg};
+}
+body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; }
+.s-nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--site-bg); border-bottom:1px solid rgba(255,255,255,0.06); }
+.s-nav-logo { font-size:18px; font-weight:800; color:var(--site-primary); }
+.s-nav-cta { padding:8px 20px; background:var(--site-primary); color:#fff; border-radius:20px; font-size:13px; font-weight:700; border:none; cursor:pointer; }
+.s-hero { background:var(--site-bg); color:#fff; text-align:center; padding:80px 40px 70px; }
+.s-hero-tag { display:inline-block; padding:4px 14px; border-radius:20px; background:rgba(255,255,255,0.08); font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--site-accent); margin-bottom:24px; }
+.s-hero h1 { font-size:clamp(28px,5vw,52px); font-weight:900; letter-spacing:-1px; line-height:1.1; margin-bottom:18px; background:linear-gradient(135deg,#fff,var(--site-accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.s-hero p { font-size:18px; color:rgba(255,255,255,0.55); max-width:540px; margin:0 auto 36px; }
+.s-hero-btn { display:inline-block; padding:16px 44px; background:linear-gradient(135deg,var(--site-primary),var(--site-dark)); color:#fff; border-radius:50px; font-size:16px; font-weight:700; border:none; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+.s-services { padding:70px 40px; background:#fff; }
+.s-section-tag { text-align:center; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--site-primary); margin-bottom:10px; }
+.s-section-title { text-align:center; font-size:clamp(22px,4vw,36px); font-weight:800; letter-spacing:-0.5px; color:#111; margin-bottom:48px; }
+.s-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; }
+.s-card { background:#F8F5F2; border-radius:16px; padding:28px 22px; border:1px solid rgba(0,0,0,0.05); }
+.s-card-icon { font-size:32px; margin-bottom:14px; }
+.s-card h3 { font-size:16px; font-weight:700; color:#111; margin-bottom:8px; }
+.s-card p { font-size:13px; color:#666; line-height:1.6; }
+.s-card-price { margin-top:12px; font-size:15px; font-weight:800; color:var(--site-primary); }
+.s-about { padding:70px 40px; background:var(--site-bg); color:#fff; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+.s-about h2 { font-size:clamp(22px,3.5vw,34px); font-weight:800; line-height:1.2; margin-bottom:16px; }
+.s-about p { font-size:15px; color:rgba(255,255,255,0.55); line-height:1.8; margin-bottom:24px; }
+.s-about-stats { display:flex; gap:32px; }
+.s-stat-num { font-size:36px; font-weight:900; color:var(--site-primary); line-height:1; }
+.s-stat-label { font-size:12px; color:rgba(255,255,255,0.4); margin-top:4px; }
+.s-about-visual { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:20px; height:240px; display:flex; align-items:center; justify-content:center; font-size:48px; }
+.s-team { padding:70px 40px; background:#fff; }
+.s-team-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:24px; }
+.s-team-card { text-align:center; padding:32px 20px; background:#F8F5F2; border-radius:16px; border:1px solid rgba(0,0,0,0.05); }
+.s-team-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--site-primary),var(--site-dark)); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; font-weight:700; }
+.s-team-card h3 { font-size:16px; font-weight:700; color:#111; margin-bottom:4px; }
+.s-team-card p { font-size:13px; color:#888; }
+.s-reviews { padding:70px 40px; background:#F8F5F2; }
+.s-reviews-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+.s-review { background:#fff; border-radius:16px; padding:24px; border:1px solid rgba(0,0,0,0.05); }
+.s-review-stars { color:#F59E0B; font-size:14px; margin-bottom:12px; }
+.s-review-text { font-size:14px; color:#444; line-height:1.7; margin-bottom:16px; }
+.s-review-author { font-size:13px; font-weight:700; color:#111; }
+.s-cta { padding:70px 40px; background:linear-gradient(135deg,var(--site-bg) 0%,#1a0e08 100%); color:#fff; text-align:center; }
+.s-cta h2 { font-size:clamp(24px,4vw,40px); font-weight:800; margin-bottom:14px; }
+.s-cta p { font-size:16px; color:rgba(255,255,255,0.5); margin-bottom:36px; }
+.s-cta-btn { display:inline-block; padding:16px 44px; background:linear-gradient(135deg,var(--site-primary),var(--site-dark)); color:#fff; border-radius:50px; font-size:16px; font-weight:700; border:none; cursor:pointer; box-shadow:0 8px 30px rgba(0,0,0,0.4); }
+.s-contacts { padding:50px 40px; background:var(--site-bg); border-top:1px solid rgba(255,255,255,0.06); display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:24px; color:#fff; }
+.s-contact-item h4 { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:8px; }
+.s-contact-item p { font-size:15px; font-weight:600; color:rgba(255,255,255,0.85); }
+.s-footer { padding:20px 40px; background:var(--site-bg); border-top:1px solid rgba(255,255,255,0.05); text-align:center; font-size:12px; color:rgba(255,255,255,0.2); }
+@media (max-width:600px) {
+  .s-about { grid-template-columns:1fr; }
+  .s-about-visual { display:none; }
+  .s-nav,.s-hero,.s-services,.s-about,.s-team,.s-reviews,.s-cta,.s-contacts { padding-left:20px; padding-right:20px; }
+}
+</style>
+</head>
+<body>${clone.innerHTML}</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `site-${currentTpl}.html`;
+  a.click();
+  showToast('HTML сохранён!');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Init ──
+renderPreview();
+renderSectionsList();
+</script>
+</body>
+</html>
