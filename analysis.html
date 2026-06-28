@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анализ базы клиентов — Денис Файзельгаянов</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0F0C09;
+  --surface: #1A1511;
+  --surface2: #221C16;
+  --border: rgba(245,237,228,0.07);
+  --coral: #D97757;
+  --amber: #E8C07A;
+  --text: #F5EDE4;
+  --muted: rgba(245,237,228,0.45);
+  --green: #63B478;
+  --yellow: #E8C07A;
+  --red: #C26B6B;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.7; padding: 32px 20px; max-width: 960px; margin: 0 auto; }
+
+h1 { font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #D97757, #E8C07A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
+.meta { font-size: 12px; color: var(--muted); margin-bottom: 40px; }
+
+h2 { font-size: 15px; font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 1px; margin: 36px 0 16px; }
+h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 24px 0 10px; }
+
+p { color: rgba(245,237,228,0.75); margin-bottom: 12px; }
+
+/* Stat strip */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 36px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; text-align: center; }
+.stat-num { font-size: 28px; font-weight: 900; color: var(--coral); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* Verdict cards */
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; }
+.badge-green  { background: rgba(99,180,120,0.15); color: var(--green); border: 1px solid rgba(99,180,120,0.25); }
+.badge-yellow { background: rgba(232,192,122,0.12); color: var(--yellow); border: 1px solid rgba(232,192,122,0.2); }
+.badge-red    { background: rgba(194,107,107,0.12); color: var(--red); border: 1px solid rgba(194,107,107,0.2); }
+.section-title { font-size: 15px; font-weight: 700; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+tbody td { padding: 10px 10px; border-bottom: 1px solid rgba(245,237,228,0.04); color: rgba(245,237,228,0.8); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+.name { font-weight: 600; color: var(--text); }
+.addr { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Stars */
+.stars { color: var(--amber); letter-spacing: -1px; white-space: nowrap; }
+.stars-empty { color: rgba(245,237,228,0.1); letter-spacing: -1px; }
+
+/* Highlight row */
+tr.hot td { background: rgba(217,119,87,0.06); }
+tr.hot td:first-child { border-left: 2px solid var(--coral); }
+
+/* Errors */
+.error-list { list-style: none; }
+.error-list li { padding: 10px 14px; background: rgba(194,107,107,0.08); border: 1px solid rgba(194,107,107,0.15); border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+.error-list li strong { color: var(--red); }
+.error-list li span { color: var(--muted); font-size: 12px; }
+
+/* Pitch box */
+.pitch { background: var(--surface2); border-left: 3px solid var(--coral); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-top: 16px; font-size: 13px; color: rgba(245,237,228,0.75); white-space: pre-wrap; line-height: 1.7; }
+
+/* Strategy block */
+.strategy { background: linear-gradient(135deg, rgba(217,119,87,0.08), rgba(232,192,122,0.05)); border: 1px solid rgba(217,119,87,0.2); border-radius: 14px; padding: 24px; margin-top: 24px; }
+.strategy h2 { margin-top: 0; color: var(--coral); }
+.strategy ol { padding-left: 20px; color: rgba(245,237,228,0.75); }
+.strategy ol li { margin-bottom: 8px; }
+.strategy ol li strong { color: var(--text); }
+
+/* Hot lead */
+.hot-lead { background: rgba(217,119,87,0.1); border: 1px solid rgba(217,119,87,0.3); border-radius: 12px; padding: 18px 20px; margin: 16px 0; }
+.hot-lead .hl-tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--coral); margin-bottom: 6px; }
+.hot-lead .hl-name { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.hot-lead .hl-desc { font-size: 13px; color: rgba(245,237,228,0.7); }
+
+@media (max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  table { font-size: 12px; }
+  thead th, tbody td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+
+<h1>Анализ базы клиентов · Ташкент</h1>
+<p class="meta">Составлен: 28 июня 2026 · Денис Файзельгаянов · @Den_Fazil · Источники: yellowpages.uz, top.uz</p>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">50</div><div class="stat-label">компаний в базе</div></div>
+  <div class="stat"><div class="stat-num">47</div><div class="stat-label">подтверждено без сайта</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">исправлено (были с сайтом)</div></div>
+  <div class="stat"><div class="stat-num">1</div><div class="stat-num" style="font-size:14px;color:var(--coral)">🔥 горячий лид</div></div>
+</div>
+
+<!-- Errors found -->
+<h2>❌ Ошибки, найденные при проверке</h2>
+<ul class="error-list">
+  <li><strong>Chekhov Next Sport Club</strong> — <span>HAS website: chekhovsport.uz (сеть 9 клубов). Заменён на Prestige Ресторан.</span></li>
+  <li><strong>Chekhov Yulduz Sport Club</strong> — <span>HAS website: chekhovsport.uz. Заменён на Qamish Xorazm Taomlari.</span></li>
+  <li><strong>Happy Time Kindergarten</strong> — <span>HAS website: happytimeinfo.tilda.ws (Tilda). Заменён на Broadway Lounge Bar.</span></li>
+</ul>
+<p style="margin-top:12px; font-size:12px; color:var(--muted)">Остальные 47 компаний проверены — сайты не найдены ни в поисковиках, ни на их страницах в справочниках.</p>
+
+<!-- HOT LEAD -->
+<h2>🔥 Горячий лид #1</h2>
+<div class="hot-lead">
+  <div class="hl-tag">Приоритет 1 · Медицина</div>
+  <div class="hl-name">Abdulboriy Stom (стоматология)</div>
+  <div class="hl-desc">
+    Юнусабад-10, 13 · Email: a-stom.uz (Coming Soon) · Facebook: abdulboriystom<br><br>
+    Они уже <strong>купили домен</strong> и сделали страницу «Coming Soon» на a-stom.uz — значит понимают ценность сайта, но не смогли или не успели его сделать. <strong>Это идеальный момент для входа.</strong><br><br>
+    Предложение: «Вижу, у вас домен a-stom.uz уже готов — давайте запустим полноценный сайт с онлайн-записью за 5 дней?»
+  </div>
+</div>
+
+<!-- HIGH priority -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge badge-green">🟢 ВЫСОКИЙ шанс</span>
+    <span class="section-title">Стоматологии · 10 клиник</span>
+  </div>
+  <p>Лучшая категория для старта. Один новый пациент = 150–500 USD выручки. Сайт окупается с первого же клиента из Google.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Компания</th>
+        <th>Адрес</th>
+        <th>Шанс</th>
+        <th>Что предлагать</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="hot">
+        <td>2</td>
+        <td><div class="name">Abdulboriy Stom 🔥</div><div class="addr">домен a-stom.uz = Coming Soon</div></td>
+        <td>Юнусабад-10, 13</td>
+        <td><span class="stars">★★★★★</span></td>
+        <td>«Домен готов — запустим за 5 дней»</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><div class="name">Abdulaziz Stom</div><div class="addr">нет сайта, только каталоги</div></td>
+        <td>Чиланзар-19, 2</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Онлайн-запись + карта + прайс</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><div class="name">Aesthetic & Implant Clinic</div><div class="addr">имплантология — высокий чек</div></td>
+        <td>ул. Заргарлик, 41/1</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Доверие через сайт = больше имплантов ($1000+)</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><div class="name">Aider Med</div><div class="addr">Сергели — новый район, высокий спрос</div></td>
+        <td>Сергели-6А</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Новый район = конкуренция за онлайн-клиентов</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><div class="name">Akmal Denta Lyuks</div><div class="addr">«Люкс» в названии — ждут статуса</div></td>
+        <td>Юнусабад-9</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Люкс-позиционирование требует сайта</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><div class="name">Akmal Stom</div></td>
+        <td>ул. Шарк, 25/83</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Онлайн-запись + услуги + цены</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><div class="name">Akrom Stom</div><div class="addr">Instagram: @akrom.stom (есть аудитория)</div></td>
+        <td>Чиланзар-11, 18</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>«Instagram есть — добавим сайт с записью»</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><div class="name">Aleya Dent</div></td>
+        <td>ул. Гагарина, 65</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Хорошая локация, нет онлайн-присутствия</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><div class="name">Ali-Dent</div></td>
+        <td>Юнусабад-13, 64</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Спальный район — онлайн-запись критична</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><div class="name">Alisher Stom</div></td>
+        <td>Чиланзар-6, 38</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Базовый лендинг + запись</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Education -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge badge-green">🟢 ВЫСОКИЙ шанс</span>
+    <span class="section-title">Образование · 2 центра</span>
+  </div>
+  <p>Родители ищут детские центры в Google перед записью. Один ребёнок = абонемент 50–150 USD/мес. ROI очевиден.</p>
+  <table>
+    <thead><tr><th>#</th><th>Компания</th><th>Адрес</th><th>Шанс</th><th>Что предлагать</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>11</td>
+        <td><div class="name">Genius Education Center</div></td>
+        <td>Куйлюк-5, Сергелийский р-н</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Расписание + запись на пробный урок</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td><div class="name">Kelajakning Sardorlari</div></td>
+        <td>Лабзак, 12А, Шайхантахурский р-н</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Название на узбекском — аудитория местная</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Beauty -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge badge-yellow">🟡 СРЕДНИЙ шанс</span>
+    <span class="section-title">Красота (салоны + барбершоп) · 14 бизнесов</span>
+  </div>
+  <p>Многие думают «Instagram достаточно». Ключ — показать конкретный демо и объяснить ценность онлайн-записи без звонков.</p>
+  <table>
+    <thead><tr><th>#</th><th>Компания</th><th>Контакт</th><th>Шанс</th><th>Что предлагать</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>27</td>
+        <td><div class="name">King Bear Barbershop</div><div class="addr">просп. Мирзо Улугбека, 103</div></td>
+        <td>kingbearbarb@gmail.com</td>
+        <td><span class="stars">★★★★</span><span class="stars-empty">★</span></td>
+        <td>Email есть — написать сразу на почту + прикрепить демо</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td><div class="name">Miyabi</div><div class="addr">Яшнабадский р-н</div></td>
+        <td>miyabi2010@yandex.ru</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Email есть — можно написать напрямую</td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td><div class="name">Aziya</div></td>
+        <td>grandaziya@mail.ru</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Email есть — холодное письмо с демо</td>
+      </tr>
+      <tr>
+        <td>15–26</td>
+        <td><div class="name">Perfect Lashes, Adajio, Ahn's, Antar, Argosharm, Aynura, Aziza, Beatrice, Beauty Art, Bell, Beauty Salon 2012</div></td>
+        <td>top.uz (телефоны скрыты)</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Нужно найти в Instagram / позвонить через top.uz</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Fitness -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge badge-yellow">🟡 СРЕДНИЙ шанс</span>
+    <span class="section-title">Фитнес · 4 зала</span>
+  </div>
+  <p>Небольшие самостоятельные залы без сети — хорошие клиенты. Аудитория 18–35 ищет зал онлайн. Но бюджет у малых залов ограничен.</p>
+  <table>
+    <thead><tr><th>#</th><th>Компания</th><th>Адрес</th><th>Шанс</th><th>Что предлагать</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>28</td>
+        <td><div class="name">Afina ФОК</div><div class="addr">⚠️ возможно связан с гостиницей</div></td>
+        <td>Чиланзар-1, 48</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Уточнить: это самостоятельный зал или при отеле?</td>
+      </tr>
+      <tr>
+        <td>29</td>
+        <td><div class="name">Challenge Центр</div></td>
+        <td>ул. Чуст, 1</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Расписание + абонементы + онлайн-запись</td>
+      </tr>
+      <tr>
+        <td>32</td>
+        <td><div class="name">Inova Fitness</div></td>
+        <td>Каракамыш-1/1, 27А</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Продажа абонементов онлайн</td>
+      </tr>
+      <tr>
+        <td>33</td>
+        <td><div class="name">Life Fitness Club</div></td>
+        <td>ул. Афросиаб, 14</td>
+        <td><span class="stars">★★★</span><span class="stars-empty">★★</span></td>
+        <td>Проверить Instagram — если активен, хороший лид</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Cafes -->
+<div class="section">
+  <div class="section-header">
+    <span class="badge badge-red">🔴 НИЗКИЙ шанс</span>
+    <span class="section-title">Кафе и рестораны · 17 заведений</span>
+  </div>
+  <p>Сложнейшая категория. Большинство думает: «У нас и так полный зал», «Есть 2GIS и Instagram». Продавать сложнее всего — нужен чёткий ROI-аргумент. Не рекомендую начинать с них.</p>
+  <table>
+    <thead><tr><th>#</th><th>Компания</th><th>Адрес</th><th>Шанс</th><th>Аргумент</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>34</td><td><div class="name">Кафе «19/91»</div></td><td>просп. Мустакиллик, 7</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Бронирование столов + доставка</td>
+      </tr>
+      <tr>
+        <td>35</td><td><div class="name">Кафе «2 Брата»</div></td><td>Сергели-2, 50</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Спальный район — меню + доставка</td>
+      </tr>
+      <tr>
+        <td>36</td><td><div class="name">Кафе «7 Небо»</div></td><td>ул. Камаши, 61</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Название «7 Небо» = хороший брендинг</td>
+      </tr>
+      <tr>
+        <td>37–50</td>
+        <td><div class="name">Adel, Ahmad, Aksu, Al-Hayat, Afruz, Dinora, Dombrabad, Maestro, Mezon, Asiana, Bistroff, Bravery, Buxoro, Angel's Drive, Broadway</div></td>
+        <td>Различные районы</td>
+        <td><span class="stars">★★</span><span class="stars-empty">★★★</span></td>
+        <td>Упор на доставку + онлайн-бронирование</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Strategy -->
+<div class="strategy">
+  <h2>📋 Рекомендуемая стратегия</h2>
+  <ol>
+    <li><strong>Неделя 1 — только стоматологии (#1–10):</strong> лучшие лиды с самым понятным ROI. Начни с Abdulboriy Stom (#2) — у них домен куплен, они уже «почти готовы».</li>
+    <li><strong>Abdulboriy Stom:</strong> написать: «Вижу, у вас домен a-stom.uz уже есть — давайте запустим полноценный сайт за 5 дней?» Прикрепить demo-medplus.html как пример.</li>
+    <li><strong>Неделя 2 — образование + King Bear Barbershop:</strong> у King Bear есть email, можно написать напрямую. У Miyabi и Aziya тоже email-адреса.</li>
+    <li><strong>Неделя 3 — салоны красоты:</strong> найти телефоны через top.uz (нажать «Показать» у номера) и написать в WhatsApp с демо-ссылкой.</li>
+    <li><strong>Кафе — в последнюю очередь</strong> или вообще пропустить на старте. Тратить время на убеждение кафе — не самое эффективное.</li>
+  </ol>
+  <br>
+  <p style="font-size:13px; color: rgba(245,237,228,0.5);">Демо для клиентов: <strong>https://mrdfazil.github.io/project2/demo-medplus.html</strong><br>CRM-система: <strong>https://mrdfazil.github.io/project2/clients.html</strong></p>
+</div>
+
+<!-- Pitch examples -->
+<h2>✉️ Шаблоны сообщений по категориям</h2>
+
+<h3>Стоматологии (Telegram/WhatsApp)</h3>
+<div class="pitch">Здравствуйте! Меня зовут Денис, создаю сайты для стоматологий в Ташкенте.
+
+Заметил, что [название клиники] пока без сайта — а пациенты сегодня ищут врача через Google. Один новый пациент из интернета = окупает сайт полностью.
+
+Сделал демо-пример специально для вашей сферы 👇
+https://mrdfazil.github.io/project2/demo-medplus.html
+
+Срок — 5 дней. Стоимость от 300 USD. Готов обсудить.
+
+Денис · @Den_Fazil</div>
+
+<h3>Abdulboriy Stom (специальный вариант)</h3>
+<div class="pitch">Здравствуйте!
+
+Вижу, у вас уже есть домен a-stom.uz — значит понимаете ценность онлайн-присутствия. Помогу запустить полноценный сайт с онлайн-записью за 5 дней.
+
+Пример — демо для медицинской клиники:
+https://mrdfazil.github.io/project2/demo-medplus.html
+
+Стоимость от 300 USD. Написать?
+
+Денис · @Den_Fazil</div>
+
+<h3>Салоны красоты (Instagram Direct)</h3>
+<div class="pitch">Привет! Создаю сайты для салонов красоты в Ташкенте.
+
+Онлайн-запись без звонков + галерея работ — клиенты сами находят и бронируют время. Посмотрите демо-пример:
+https://mrdfazil.github.io/project2/builder.html
+
+За 3–5 дней сделаю для вашего салона. От 250 USD.
+
+@Den_Fazil</div>
+
+<h3>Фитнес-залы</h3>
+<div class="pitch">Здравствуйте! Помогаю фитнес-клубам Ташкента продавать абонементы онлайн.
+
+Расписание + прайс + форма записи на пробное занятие — и новые клиенты приходят из Google, не только по сарафанному радио.
+
+Пример: https://mrdfazil.github.io/project2/demo-medplus.html (адаптирую под фитнес)
+
+Срок 5 дней, от 250 USD. Обсудим?
+
+Денис · @Den_Fazil</div>
+
+<footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); text-align:center;">
+  Денис Файзельгаянов · Telegram: @Den_Fazil · Ташкент, 2026
+</footer>
+
+</body>
+</html>
