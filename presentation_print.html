@@ -41,8 +41,6 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0 auto 12px;
-  page-break-after: always;
-  page-break-inside: avoid;
 }
 
 /* Thin top accent line */
@@ -249,11 +247,20 @@ h2 {
 /* ─── Print settings ─── */
 @media print {
   @page {
-    size: 297mm 167.1mm landscape;
+    size: 297mm 167.1mm;
     margin: 0;
   }
   html { background: none; }
-  .slide { margin: 0; box-shadow: none; }
+  .slide {
+    margin: 0 !important;
+    box-shadow: none;
+    page-break-after: always;
+    break-after: page;
+  }
+  .slide:last-of-type {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
   .no-print { display: none !important; }
 }
 
