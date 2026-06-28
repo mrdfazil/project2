@@ -309,6 +309,111 @@
     pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── Letter button ── */
+  .btn-letter {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-letter:hover { border-color: rgba(217,119,87,0.5); color: var(--coral); background: rgba(217,119,87,0.08); }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: #1E1710;
+    border: 1px solid rgba(217,119,87,0.2);
+    border-radius: 20px;
+    width: 100%; max-width: 640px;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    transform: translateY(20px);
+    transition: transform 0.25s;
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-head {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .modal-head h3 { font-size: 16px; font-weight: 700; color: var(--text); }
+  .modal-head p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .modal-close {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 20px; line-height: 1; padding: 0 4px; flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+  }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-thumb { background: rgba(217,119,87,0.3); border-radius: 2px; }
+
+  .letter-textarea {
+    width: 100%;
+    min-height: 340px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .letter-textarea:focus { border-color: rgba(217,119,87,0.4); }
+
+  .modal-foot {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+  }
+  .btn-copy {
+    padding: 9px 20px; border-radius: 8px;
+    background: linear-gradient(135deg, #D97757, #B85C35);
+    color: #fff; font-size: 13px; font-weight: 700;
+    border: none; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-copy:hover { opacity: 0.85; }
+  .btn-tg {
+    padding: 9px 20px; border-radius: 8px;
+    background: rgba(34,158,217,0.15); border: 1px solid rgba(34,158,217,0.3);
+    color: #5BBFEA; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-tg:hover { background: rgba(34,158,217,0.25); }
+  .btn-modal-cancel {
+    padding: 9px 16px; border-radius: 8px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-modal-cancel:hover { color: var(--text); border-color: rgba(245,237,228,0.2); }
 </style>
 </head>
 <body>
@@ -380,6 +485,30 @@
 </main>
 
 <div class="toast" id="toast"></div>
+
+<!-- Letter Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle">Письмо клиенту</h3>
+        <p id="modalSubtitle"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea class="letter-textarea" id="letterText" spellcheck="false"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" onclick="closeModal()">Закрыть</button>
+      <button class="btn-copy" onclick="copyLetter()">📋 Скопировать</button>
+      <a class="btn-tg" id="tgLink" href="https://t.me/" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.16 13.67l-2.963-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.991.889z"/></svg>
+        Открыть Telegram
+      </a>
+    </div>
+  </div>
+</div>
 
 <script>
 const CLIENTS = [
@@ -513,6 +642,7 @@ function render() {
         <div class="note-cell">
           <input class="note-input" type="text" placeholder="Добавить заметку..."
             value="${row.note||''}" data-id="${c.id}" onclick="event.stopPropagation()">
+          <button class="btn-letter" data-id="${c.id}" onclick="event.stopPropagation();openLetter(${c.id})">✉️ Письмо</button>
         </div>
       </td>`;
     tbody.appendChild(tr);
@@ -638,6 +768,312 @@ function applyFilters() {
   const visible = document.querySelectorAll('#tbody tr:not(.hidden)').length;
   document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
 }
+
+// ── Letter templates ──
+const LETTER_TEMPLATES = {
+  'Медицина': (name) => `Здравствуйте!
+
+Меня зовут Денис, я занимаюсь созданием сайтов и лендингов для медицинских учреждений в Ташкенте.
+
+Я заметил, что ${name} пока не представлена в интернете. Сегодня более 70% пациентов ищут врача и клинику через Google — и если вас там нет, они уходят к конкурентам.
+
+Что я предлагаю:
+• Профессиональный лендинг за 3–5 дней
+• Онлайн-запись к врачу прямо с сайта
+• Раздел с услугами и ценами
+• Адаптация под телефон
+• Форма для связи и карта проезда
+
+Стоимость — от 300 USD. Показываю примеры работ по запросу.
+
+Готов обсудить детали в удобное для вас время. Напишите или позвоните.
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Красота': (name) => `Здравствуйте!
+
+Меня зовут Денис, создаю сайты и лендинги для салонов красоты и beauty-бизнеса в Ташкенте.
+
+Обратил внимание, что ${name} пока без сайта. Между тем клиенты всё чаще ищут мастеров и салоны в Google — и выбирают тех, у кого есть онлайн-запись и фотогалерея работ.
+
+Что даст лендинг:
+• Онлайн-запись — клиент бронирует время без звонка
+• Галерея работ с реальными фото
+• Прайс-лист и список услуг
+• Отзывы клиентов
+• Кнопки WhatsApp и Instagram
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Напишите, покажу примеры и обсудим детали.
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Образование': (name) => `Здравствуйте!
+
+Меня зовут Денис, я помогаю образовательным центрам и школам Ташкента привлекать учеников через интернет.
+
+${name} пока не представлена онлайн — а ведь родители и студенты ищут курсы именно через Google. Без сайта вы теряете учеников каждый день.
+
+Что я создам для вас:
+• Лендинг с описанием программ и преподавателей
+• Онлайн-запись на пробный урок
+• Расписание и цены
+• Отзывы учеников
+• Форма для связи
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Готов показать примеры работ. Напишите удобным способом.
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Свадьба': (name) => `Здравствуйте!
+
+Меня зовут Денис, создаю сайты и лендинги для свадебного бизнеса в Ташкенте.
+
+Невесты начинают искать подрядчиков за 6–12 месяцев до свадьбы — и делают это через Google и Instagram. ${name} пока без сайта, а значит часть клиентов просто не находит вас.
+
+Что получите:
+• Красивый лендинг с портфолио
+• Форма заявки прямо на сайте
+• Пакеты услуг с ценами
+• Кнопка WhatsApp/Telegram для быстрой связи
+• Адаптация под телефон
+
+Срок — 3–5 дней. Стоимость — от 300 USD.
+
+Покажу примеры работ по запросу. Напишите!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Фото/Видео': (name) => `Здравствуйте!
+
+Меня зовут Денис, помогаю фотографам и видеографам Ташкента получать больше заказов через интернет.
+
+${name} пока без сайта-портфолио. Потенциальные клиенты не могут найти вас в Google и оценить работы — они уходят к тем, у кого есть удобный сайт.
+
+Что сделаю:
+• Портфолио с галереей лучших работ
+• Пакеты услуг и прайс
+• Форма бронирования
+• Отзывы клиентов
+• Ссылки на соцсети
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Напишите, обсудим!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Спорт': (name) => `Здравствуйте!
+
+Меня зовут Денис, создаю сайты для фитнес-клубов, студий и спортивных школ Ташкента.
+
+${name} пока без сайта. Люди ищут тренировки и залы в Google — без онлайн-присутствия вы упускаете новых клиентов каждый день.
+
+Что сделаю:
+• Лендинг с расписанием и ценами на абонементы
+• Онлайн-запись на пробное занятие
+• Фото зала и тренеров
+• Отзывы участников
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Готов показать примеры. Напишите!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Еда': (name) => `Здравствуйте!
+
+Меня зовут Денис, помогаю кафе, ресторанам и кондитерским Ташкента привлекать клиентов онлайн.
+
+${name} пока без сайта. Многие гости ищут заведение или делают заказ через интернет — без сайта вы зависите только от сарафанного радио.
+
+Что сделаю:
+• Лендинг с меню и ценами
+• Форма онлайн-заказа или бронирования стола
+• Фотогалерея блюд и интерьера
+• Карта проезда и контакты
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Напишите, покажу примеры!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Авто': (name) => `Здравствуйте!
+
+Меня зовут Денис, создаю сайты для автосервисов и авто-бизнеса в Ташкенте.
+
+${name} пока без сайта. Владельцы автомобилей, особенно иномарок, ищут сервис онлайн и выбирают тех, у кого есть сайт с отзывами и прайсом.
+
+Что сделаю:
+• Лендинг с перечнем услуг и ценами
+• Онлайн-запись на обслуживание
+• Фото работ и оборудования
+• Отзывы клиентов
+• Карта и контакты
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Напишите, обсудим детали!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'B2B услуги': (name) => `Здравствуйте!
+
+Меня зовут Денис, помогаю B2B компаниям Ташкента получать корпоративных клиентов через интернет.
+
+${name} пока без сайта. Бизнес-клиенты всегда проверяют компанию онлайн перед тем, как позвонить — без сайта вы теряете доверие ещё до первого контакта.
+
+Что сделаю:
+• Профессиональный лендинг с описанием услуг
+• Раздел с кейсами и клиентами
+• Форма для заявки
+• Контакты и реквизиты
+
+Срок — 3–5 дней. Стоимость — от 300 USD.
+
+Готов обсудить детали. Напишите!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Юридические услуги': (name) => `Здравствуйте!
+
+Меня зовут Денис, создаю сайты для юридических компаний и нотариусов Ташкента.
+
+${name} пока без сайта. Люди, которым нужна юридическая помощь, ищут её в Google и выбирают тех, у кого есть сайт с описанием услуг и контактами. Без сайта — вас просто не находят.
+
+Что сделаю:
+• Лендинг с перечнем услуг
+• Форма для консультации
+• Информация о специалистах
+• Контакты и адрес
+
+Срок — 3–5 дней. Стоимость — от 300 USD.
+
+Напишите, обсудим!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Недвижимость': (name) => `Здравствуйте!
+
+Меня зовут Денис, помогаю риелторам и агентствам Ташкента привлекать клиентов онлайн.
+
+${name} пока без сайта. Покупатели и арендаторы недвижимости начинают поиск в интернете — и звонят тем, у кого есть удобный сайт с объектами.
+
+Что сделаю:
+• Лендинг с актуальными объектами
+• Форма заявки на просмотр
+• Калькулятор ипотеки или аренды
+• Контакты и WhatsApp
+
+Срок — 3–5 дней. Стоимость — от 300 USD.
+
+Напишите, покажу примеры!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+
+  'Дизайн': (name) => `Здравствуйте!
+
+Меня зовут Денис, помогаю дизайнерам и творческим специалистам Ташкента находить клиентов онлайн.
+
+${name} пока без сайта-портфолио. Клиенты, которые ищут дизайнера, сначала смотрят работы онлайн — без сайта вы теряете заказы.
+
+Что сделаю:
+• Портфолио с лучшими проектами
+• Форма заявки
+• Информация об услугах и стоимости
+• Ссылки на соцсети
+
+Срок — 3–5 дней. Стоимость — от 250 USD.
+
+Напишите, обсудим!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`,
+};
+
+function getLetter(client) {
+  const tpl = LETTER_TEMPLATES[client.cat];
+  if (tpl) return tpl(client.name);
+  // Default template
+  return `Здравствуйте!
+
+Меня зовут Денис, создаю сайты и лендинги для бизнеса в Ташкенте.
+
+Я заметил, что ${client.name} пока не представлена в интернете. Сегодня клиенты всё чаще ищут услуги через Google — и без сайта вы упускаете значительную часть аудитории.
+
+Что я предлагаю:
+• Профессиональный лендинг за 3–5 дней
+• Форма заявки и онлайн-запись
+• Адаптация под телефон
+• Полная настройка и передача вам
+
+Стоимость — от 250 USD.
+
+Готов показать примеры. Напишите!
+
+С уважением,
+Денис Файзельгаянов
+Telegram: @Den_Fazil`;
+}
+
+function openLetter(id) {
+  const c = CLIENTS.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = `Письмо: ${c.name}`;
+  document.getElementById('modalSubtitle').textContent = `${c.cat} · Приоритет ${c.p}`;
+  document.getElementById('letterText').value = getLetter(c);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function copyLetter() {
+  const text = document.getElementById('letterText').value;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Письмо скопировано!');
+  }).catch(() => {
+    document.getElementById('letterText').select();
+    document.execCommand('copy');
+    showToast('Письмо скопировано!');
+  });
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
 
 // Init
 load();
