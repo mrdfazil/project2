@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFO Assistant · Денис</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --coral:  #D97757;
+  --dark:   #B85C35;
+  --amber:  #E8C07A;
+  --bg:     #0F0C09;
+  --s1:     #1A1511;
+  --s2:     #221C16;
+  --s3:     #2A2018;
+  --text:   #F5EDE4;
+  --muted:  rgba(245,237,228,0.45);
+  --border: rgba(245,237,228,0.08);
+  --green:  #63B478;
+  --blue:   #5B9BD5;
+}
+
+html, body { min-height: 100vh; background: var(--bg); font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
+
+/* ── Layout ── */
+.wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* ── Header ── */
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; gap: 16px; }
+.header-left {}
+.greeting { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.header h1 span { background: linear-gradient(135deg, var(--coral), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.date-chip { font-size: 12px; color: var(--muted); background: var(--s1); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; white-space: nowrap; }
+
+/* ── Section label ── */
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--coral); margin-bottom: 14px; }
+
+/* ── Cards grid ── */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--coral), var(--amber));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.card:hover { border-color: rgba(217,119,87,0.3); background: var(--s2); transform: translateY(-2px); }
+.card:hover::before { opacity: 1; }
+.card-icon { font-size: 28px; margin-bottom: 12px; }
+.card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.card-tag { display: inline-block; margin-top: 12px; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+.tag-finance { background: rgba(217,119,87,0.12); color: var(--coral); }
+.tag-report  { background: rgba(232,192,122,0.12); color: var(--amber); }
+.tag-personal{ background: rgba(99,180,120,0.12); color: var(--green); }
+
+/* ── Quick input ── */
+.quick-box { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 32px; }
+.quick-box textarea {
+  width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-family: inherit; font-size: 14px; padding: 14px 16px;
+  resize: none; outline: none; line-height: 1.6; transition: border-color 0.2s;
+  min-height: 72px;
+}
+.quick-box textarea:focus { border-color: rgba(217,119,87,0.4); }
+.quick-box textarea::placeholder { color: var(--muted); }
+.quick-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: opacity 0.2s, transform 0.1s; font-family: inherit;
+}
+.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-primary { background: linear-gradient(135deg, var(--coral), var(--dark)); color: #fff; }
+.btn-secondary { background: var(--s2); color: var(--text); border: 1px solid var(--border); }
+.btn-claude { background: rgba(91,155,213,0.15); color: var(--blue); border: 1px solid rgba(91,155,213,0.2); }
+
+/* ── Modal overlay ── */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--s1); border: 1px solid rgba(217,119,87,0.2); border-radius: 20px;
+  width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+  transform: translateY(20px); transition: transform 0.25s;
+  display: flex; flex-direction: column;
+}
+.overlay.open .modal { transform: translateY(0); }
+
+.modal-head {
+  padding: 24px 28px 0;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.modal-icon { font-size: 32px; flex-shrink: 0; }
+.modal-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.modal-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--s2); border: 1px solid var(--border);
+  color: var(--muted); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.2s;
+}
+.modal-close:hover { background: var(--s3); color: var(--text); }
+
+.modal-body { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
+
+.field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+.prompt-preview {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; font-size: 12px; color: rgba(245,237,228,0.6);
+  line-height: 1.7; white-space: pre-wrap; max-height: 140px; overflow-y: auto;
+}
+.prompt-preview .placeholder { color: var(--coral); font-weight: 600; }
+
+.data-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-family: 'Courier New', monospace; font-size: 12px;
+  padding: 14px 16px; resize: vertical; outline: none; line-height: 1.6;
+  min-height: 120px; transition: border-color 0.2s;
+}
+.data-input:focus { border-color: rgba(217,119,87,0.4); }
+.data-input::placeholder { color: var(--muted); font-family: 'Segoe UI', sans-serif; }
+
+.modal-footer { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--green); color: #fff; font-size: 13px; font-weight: 600;
+  padding: 10px 24px; border-radius: 30px; z-index: 200;
+  opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── History ── */
+.history { display: flex; flex-direction: column; gap: 8px; }
+.history-item {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  transition: background 0.2s;
+}
+.history-item:hover { background: var(--s2); }
+.history-ico { font-size: 16px; flex-shrink: 0; }
+.history-text { font-size: 13px; flex: 1; }
+.history-time { font-size: 11px; color: var(--muted); }
+
+/* ── Tips block ── */
+.tips { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.tips ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.tips ul li { font-size: 13px; color: rgba(245,237,228,0.75); display: flex; gap: 10px; line-height: 1.5; }
+.tips ul li::before { content: '→'; color: var(--coral); flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+  .modal { max-height: 95vh; }
+  .header { flex-direction: column; }
+}
+@media (max-width: 420px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="greeting" id="greeting">Добрый день</div>
+      <h1>CFO <span>Assistant</span></h1>
+    </div>
+    <div class="date-chip" id="datechip">—</div>
+  </div>
+
+  <!-- Quick personal question -->
+  <div class="section-label">Личный помощник</div>
+  <div class="quick-box">
+    <textarea id="quickInput" placeholder="Задай любой вопрос — рабочий, личный, бытовой...&#10;Например: «Как составить письмо партнёру об отсрочке платежа?»"></textarea>
+    <div class="quick-actions">
+      <button class="btn btn-primary" onclick="sendQuick()">Подготовить промпт</button>
+      <button class="btn btn-claude" onclick="openClaude()">Открыть Claude.ai →</button>
+    </div>
+  </div>
+
+  <!-- Finance cards -->
+  <div class="section-label">Финансовые задачи</div>
+  <div class="grid" id="finGrid">
+
+    <div class="card" onclick="openModal('osv')">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Анализ ОСВ</div>
+      <div class="card-desc">Выявление отклонений, нетипичных остатков и аномалий в оборотно-сальдовой ведомости</div>
+      <span class="card-tag tag-finance">Ежемесячно</span>
+    </div>
+
+    <div class="card" onclick="openModal('ifrs')">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Резервы МСФО 9</div>
+      <div class="card-desc">Проверка расчёта ECL, корректности Stage 1/2/3, параметров PD / LGD / EAD</div>
+      <span class="card-tag tag-finance">МСФО</span>
+    </div>
+
+    <div class="card" onclick="openModal('mgmt')">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Управленческий отчёт</div>
+      <div class="card-desc">Комментарии к P&L и балансу, анализ отклонений от плана и прошлого периода</div>
+      <span class="card-tag tag-report">Отчётность</span>
+    </div>
+
+    <div class="card" onclick="openModal('investor')">
+      <div class="card-icon">📨</div>
+      <div class="card-title">Отчёт инвесторам</div>
+      <div class="card-desc">Профессиональный отчёт для акционеров — KPI, достижения, вызовы, прогноз</div>
+      <span class="card-tag tag-report">Инвесторы</span>
+    </div>
+
+    <div class="card" onclick="openModal('email')">
+      <div class="card-icon">✉️</div>
+      <div class="card-title">Деловое письмо</div>
+      <div class="card-desc">Профессиональные письма партнёрам, банкам, регуляторам — чётко и по делу</div>
+      <span class="card-tag tag-report">Переписка</span>
+    </div>
+
+    <div class="card" onclick="openModal('portfolio')">
+      <div class="card-icon">🗂️</div>
+      <div class="card-title">Анализ портфеля</div>
+      <div class="card-desc">Структура лизингового портфеля, концентрация рисков, дебиторская задолженность</div>
+      <span class="card-tag tag-finance">Портфель</span>
+    </div>
+
+  </div>
+
+  <!-- Tips -->
+  <div class="section-label">Как пользоваться</div>
+  <div class="tips">
+    <ul>
+      <li>Нажми на задачу → вставь данные из 1С или Excel → нажми «Скопировать промпт»</li>
+      <li>Открой <strong>claude.ai</strong> → нажми Ctrl+V → отправь → получи готовый анализ</li>
+      <li>Чем больше данных вставишь — тем точнее и детальнее будет ответ Claude</li>
+      <li>Сохрани эту страницу в закладки — она работает без интернета и без регистрации</li>
+    </ul>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- ── Modals ── -->
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+<div class="modal" id="modal">
+
+  <div class="modal-head">
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <div class="modal-icon" id="mIcon">📊</div>
+      <div>
+        <div class="modal-title" id="mTitle">Анализ ОСВ</div>
+        <div class="modal-sub" id="mSub">Выявление отклонений и аномалий</div>
+      </div>
+    </div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <div>
+      <div class="field-label">Промпт для Claude</div>
+      <div class="prompt-preview" id="mPrompt"></div>
+    </div>
+    <div>
+      <div class="field-label">Вставь данные из 1С / Excel</div>
+      <textarea class="data-input" id="mData" placeholder="Вставь сюда таблицу, цифры или описание ситуации...&#10;&#10;Можно скопировать прямо из Excel — Claude поймёт табличный формат."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="copyPrompt()">📋 Скопировать промпт</button>
+      <button class="btn btn-claude" onclick="openClaude()">Открыть Claude.ai →</button>
+      <button class="btn btn-secondary" onclick="clearData()">Очистить</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Промпт скопирован — вставь в Claude (Ctrl+V)</div>
+
+<script>
+// ── Date & Greeting ──
+(function() {
+  const now  = new Date();
+  const h    = now.getHours();
+  const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+  const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  document.getElementById('greeting').textContent =
+    h < 12 ? 'Доброе утро, Денис 👋' : h < 18 ? 'Добрый день, Денис 👋' : 'Добрый вечер, Денис 👋';
+  document.getElementById('datechip').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+})();
+
+// ── Prompt templates ──
+const TASKS = {
+  osv: {
+    icon: '📊',
+    title: 'Анализ ОСВ',
+    sub: 'Оборотно-сальдовая ведомость',
+    prompt: `Ты — опытный финансовый аналитик с экспертизой в МСФО и управленческом учёте.
+
+Проанализируй оборотно-сальдовую ведомость (ОСВ) и выполни следующее:
+
+1. Выяви нетипичные остатки по счетам (нулевые, отрицательные, аномально высокие)
+2. Укажи счета с отклонением более 10% по сравнению с предыдущим периодом
+3. Проверь корректность корреспонденции счетов
+4. Выдели потенциальные ошибки или требующие пояснения позиции
+5. Дай краткое заключение (3–5 предложений) об общем финансовом состоянии
+
+Формат ответа: структурированный список с выводами и рекомендациями.
+
+Данные ОСВ:
+[ДАННЫЕ]`
+  },
+  ifrs: {
+    icon: '📐',
+    title: 'Резервы МСФО 9',
+    sub: 'Проверка расчёта ECL',
+    prompt: `Ты — эксперт по МСФО 9 «Финансовые инструменты» с опытом работы в лизинговых компаниях.
+
+Проверь расчёт резервов под ожидаемые кредитные убытки (ECL) и дай заключение по следующим пунктам:
+
+1. Корректность распределения активов по стадиям (Stage 1 / Stage 2 / Stage 3)
+2. Обоснованность применяемых параметров: PD (вероятность дефолта), LGD (потери при дефолте), EAD (величина под риском)
+3. Учёт форвардных макроэкономических индикаторов
+4. Соответствие требованиям МСФО 9, параграфы 5.5.1–5.5.20
+5. Риски, которые могут вызвать вопросы у аудиторов
+
+Дай краткое профессиональное заключение и укажи, что нужно уточнить или исправить.
+
+Данные портфеля / расчёта:
+[ДАННЫЕ]`
+  },
+  mgmt: {
+    icon: '📋',
+    title: 'Управленческий отчёт',
+    sub: 'Комментарии к P&L и балансу',
+    prompt: `Ты — опытный финансовый директор, помогающий подготовить профессиональные комментарии к управленческой отчётности.
+
+На основе предоставленных данных подготовь:
+
+1. Краткое резюме для руководства (3–5 предложений) — ключевые итоги периода
+2. Анализ отклонений от плана и прошлого периода (факторный анализ)
+3. Основные факторы, повлиявшие на финансовый результат
+4. Динамика ключевых показателей: выручка, EBITDA, чистая прибыль, активы
+5. Предложения по улучшению показателей на следующий период
+
+Тон: деловой, чёткий, без воды. Ориентация на собственников и топ-менеджмент.
+
+Данные отчёта:
+[ДАННЫЕ]`
+  },
+  investor: {
+    icon: '📨',
+    title: 'Отчёт инвесторам',
+    sub: 'Профессиональный отчёт для акционеров',
+    prompt: `Ты — финансовый директор, готовящий официальный отчёт для инвесторов и акционеров.
+
+Составь профессиональный отчёт объёмом 1 страница со следующей структурой:
+
+1. КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ — таблица основных KPI за период vs план vs прошлый период
+2. ДОСТИЖЕНИЯ ПЕРИОДА — 3–5 конкретных результатов
+3. ВЫЗОВЫ И МЕРЫ — что было сложно, что предпринято
+4. ПОРТФЕЛЬ — динамика и качество (если применимо)
+5. ПРОГНОЗ — ожидания на следующий период
+
+Тон: профессиональный, уверенный, прозрачный. Инвесторы ценят честность и конкретность.
+
+Данные для отчёта:
+[ДАННЫЕ]`
+  },
+  email: {
+    icon: '✉️',
+    title: 'Деловое письмо',
+    sub: 'Письма партнёрам, банкам, регуляторам',
+    prompt: `Ты — опытный бизнес-коммуникатор. Напиши профессиональное деловое письмо на русском языке.
+
+Требования:
+— Тон: уважительный, чёткий, деловой
+— Объём: не более 150–200 слов
+— Структура: обращение → суть → конкретный запрос/предложение → завершение
+— Без лишних вводных слов и канцеляризма
+
+Параметры письма:
+[ДАННЫЕ]
+
+Например укажи: кому, по какому вопросу, что нужно донести или запросить, какой желаемый результат.`
+  },
+  portfolio: {
+    icon: '🗂️',
+    title: 'Анализ портфеля',
+    sub: 'Лизинговый портфель и дебиторка',
+    prompt: `Ты — финансовый аналитик со специализацией в лизинговом бизнесе.
+
+Проанализируй состояние портфеля и подготовь заключение по следующим направлениям:
+
+1. СТРУКТУРА ПОРТФЕЛЯ — разбивка по продуктам, срокам, клиентским сегментам
+2. КОНЦЕНТРАЦИЯ РИСКОВ — топ-10 клиентов, отраслевая концентрация
+3. КАЧЕСТВО ПОРТФЕЛЯ — доля просроченной задолженности, NPL, покрытие резервами
+4. ДЕБИТОРСКАЯ ЗАДОЛЖЕННОСТЬ — aging-анализ, динамика просрочки
+5. ТРЕНДЫ И РИСКИ — что требует особого внимания
+
+Дай конкретные выводы и рекомендации для менеджмента.
+
+Данные портфеля:
+[ДАННЫЕ]`
+  }
+};
+
+let activeTask = null;
+
+function openModal(key) {
+  const t = TASKS[key];
+  activeTask = key;
+  document.getElementById('mIcon').textContent  = t.icon;
+  document.getElementById('mTitle').textContent = t.title;
+  document.getElementById('mSub').textContent   = t.sub;
+  document.getElementById('mData').value = '';
+
+  // Render prompt with highlighted placeholder
+  const preview = document.getElementById('mPrompt');
+  preview.innerHTML = t.prompt.replace('[ДАННЫЕ]', '<span class="placeholder">← здесь будут твои данные</span>');
+
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('mData').focus(), 300);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  activeTask = null;
+}
+
+function closeOnBg(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+function buildPrompt() {
+  if (!activeTask) return null;
+  const data = document.getElementById('mData').value.trim();
+  return TASKS[activeTask].prompt.replace('[ДАННЫЕ]', data || '(данные не добавлены)');
+}
+
+function copyPrompt() {
+  const prompt = buildPrompt();
+  if (!prompt) return;
+  navigator.clipboard.writeText(prompt).then(showToast).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  });
+}
+
+function sendQuick() {
+  const q = document.getElementById('quickInput').value.trim();
+  if (!q) return;
+  const prompt = `Ты — мой личный помощник. Отвечай чётко, практично и по существу. Если вопрос финансовый — используй профессиональную терминологию.\n\n${q}`;
+  navigator.clipboard.writeText(prompt).then(showToast).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast();
+  });
+}
+
+function openClaude() {
+  if (activeTask) copyPrompt();
+  else {
+    const q = document.getElementById('quickInput').value.trim();
+    if (q) sendQuick();
+  }
+  setTimeout(() => window.open('https://claude.ai/new', '_blank'), 300);
+}
+
+function clearData() {
+  document.getElementById('mData').value = '';
+  document.getElementById('mData').focus();
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Keyboard ESC
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
